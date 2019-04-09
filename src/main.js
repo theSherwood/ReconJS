@@ -51,19 +51,21 @@ Main.prototype.$split = str => {
     numberStack: [],
     stringStack: []
   };
-  const { segments, wordStack, numberStack, stringStack } = data;
 
   for (let i = 0; i < str.length; i++) {
     switch (true) {
-      case wordStack.length > 0: // a word is underway
-        inWordStack(str[i], i, data, str.length);
+      case data.wordStack.length > 0: // a word is underway
+        inWordStack(str[i], i, data);
         break;
       default:
         emptyStacks(str[i], i, data);
     }
   }
 
-  return segments;
+  if (data.wordStack.length > 0) {
+    data.segments.push(data.wordStack.join(""));
+  }
+  return data.segments;
 };
 
 // Main.prototype.split = function(str) {
