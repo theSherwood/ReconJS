@@ -4,21 +4,21 @@ function inWordStack(char, i, data) {
   const { segments, wordStack, numberStack, stringStack } = data;
   switch (true) {
     case /[\w$]/.test(char):
-      wordStack.push(char);
+      data.wordStack.push(char);
       break;
     case /[\d]/.test(char):
       segments.push(wordStack.join(""));
-      wordStack = [];
+      data.wordStack = [];
       numberStack.push(char);
       break;
     case /['"]/.test(char):
       segments.push(wordStack.join(""));
-      wordStack = [];
+      data.wordStack = [];
       stringStack.push(char);
       break;
     default:
       segments.push(wordStack.join(""));
-      wordStack = [];
+      data.wordStack = [];
       segments.push(char);
       break;
   }
@@ -44,10 +44,6 @@ function emptyStacks(char, i, data) {
 
 function Main() {}
 
-Main.prototype.test = (a, b) => {
-  return a + b;
-};
-
 Main.prototype.$split = str => {
   const data = {
     segments: [],
@@ -59,8 +55,8 @@ Main.prototype.$split = str => {
 
   for (let i = 0; i < str.length; i++) {
     switch (true) {
-      case wordStack.length: // a word is underway
-        inWordStack(str[i], i, data);
+      case wordStack.length > 0: // a word is underway
+        inWordStack(str[i], i, data, str.length);
         break;
       default:
         emptyStacks(str[i], i, data);
