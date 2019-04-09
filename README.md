@@ -1,0 +1,2 @@
+# JSLite
+statically sanitize javascript
