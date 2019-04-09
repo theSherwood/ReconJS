@@ -10,15 +10,37 @@ describe("Main", function() {
     expect(main.aProperty).toBe(1);
   });
 
-  describe("test", function() {
+  // describe("test", function() {
+  //   var main;
+
+  //   beforeEach(function() {
+  //     main = new Main();
+  //   });
+
+  //   it("adds two numbers together", function() {
+  //     expect(main.test(10, 1)).toBe(11);
+  //   });
+  // });
+
+  describe("split", function() {
     var main;
 
     beforeEach(function() {
       main = new Main();
     });
 
-    it("adds two numbers together", function() {
-      expect(main.test(10, 1)).toBe(11);
+    it("adds some non-word, -digit, and -quote char in a string to an array and returns it", () => {
+      expect(main.$split("{[-=+,.]}")).toEqual([
+        "{",
+        "[",
+        "-",
+        "=",
+        "+",
+        ",",
+        ".",
+        "]",
+        "}"
+      ]);
     });
   });
 });
