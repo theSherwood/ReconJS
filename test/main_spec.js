@@ -32,6 +32,7 @@ describe("Main", function() {
       ]);
     });
 
+    // Words
     it("returns an array in which word chars in series are added as one string", () => {
       expect(main.$split("one two ")).toEqual(["one", " ", "two", " "]);
     });
@@ -50,6 +51,11 @@ describe("Main", function() {
         " ",
         "$_"
       ]);
+    });
+
+    // Numbers
+    it("returns an array in which digit chars in series are added as one string", () => {
+      expect(main.$split("123 456 ")).toEqual(["123", " ", "456", " "]);
     });
   });
 });
