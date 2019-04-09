@@ -10,18 +10,6 @@ describe("Main", function() {
     expect(main.aProperty).toBe(1);
   });
 
-  // describe("test", function() {
-  //   var main;
-
-  //   beforeEach(function() {
-  //     main = new Main();
-  //   });
-
-  //   it("adds two numbers together", function() {
-  //     expect(main.test(10, 1)).toBe(11);
-  //   });
-  // });
-
   describe("split", function() {
     var main;
 
@@ -30,7 +18,7 @@ describe("Main", function() {
     });
 
     it("adds some non-word, -digit, and -quote char in a string to an array and returns it", () => {
-      expect(main.$split("{[-=+,.]}")).toEqual([
+      expect(main.$split("{[-=+,.]} ")).toEqual([
         "{",
         "[",
         "-",
@@ -39,8 +27,13 @@ describe("Main", function() {
         ",",
         ".",
         "]",
-        "}"
+        "}",
+        " "
       ]);
+    });
+
+    it("returns an array in which word chars in series are added as one string", () => {
+      expect(main.$split("one two ")).toEqual(["one", " ", "two", " "]);
     });
   });
 });
