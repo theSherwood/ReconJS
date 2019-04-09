@@ -1,5 +1,29 @@
 "use strict";
 
+function inWordStack(char, i, data) {
+  const { segments, wordStack, numberStack, stringStack } = data;
+  switch (true) {
+    case /[\w$]/.test(char):
+      wordStack.push(char);
+      break;
+    case /[\d]/.test(char):
+      segments.push(wordStack.join(""));
+      wordStack = [];
+      numberStack.push(char);
+      break;
+    case /['"]/.test(char):
+      segments.push(wordStack.join(""));
+      wordStack = [];
+      stringStack.push(char);
+      break;
+    default:
+      segments.push(wordStack.join(""));
+      wordStack = [];
+      segments.push(char);
+      break;
+  }
+}
+
 function emptyStacks(char, i, data) {
   const { segments, wordStack, numberStack, stringStack } = data;
   switch (true) {
@@ -31,15 +55,19 @@ Main.prototype.$split = str => {
     numberStack: [],
     stringStack: []
   };
+  const { segments, wordStack, numberStack, stringStack } = data;
 
   for (let i = 0; i < str.length; i++) {
     switch (true) {
+      case wordStack.length: // a word is underway
+        inWordStack(str[i], i, data);
+        break;
       default:
         emptyStacks(str[i], i, data);
     }
   }
 
-  return data.segments;
+  return segments;
 };
 
 // Main.prototype.split = function(str) {
