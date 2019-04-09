@@ -35,5 +35,9 @@ describe("Main", function() {
     it("returns an array in which word chars in series are added as one string", () => {
       expect(main.$split("one two ")).toEqual(["one", " ", "two", " "]);
     });
+
+    it("completes word if the final char is part of a word", () => {
+      expect(main.$split("one two")).toEqual(["one", " ", "two"]);
+    });
   });
 });
