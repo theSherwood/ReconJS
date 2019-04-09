@@ -39,5 +39,17 @@ describe("Main", function() {
     it("completes word if the final char is part of a word", () => {
       expect(main.$split("one two")).toEqual(["one", " ", "two"]);
     });
+
+    it("considers '_' and '$' to be word characters", () => {
+      expect(main.$split("$o_ne _t$wo _$ $_")).toEqual([
+        "$o_ne",
+        " ",
+        "_t$wo",
+        " ",
+        "_$",
+        " ",
+        "$_"
+      ]);
+    });
   });
 });
