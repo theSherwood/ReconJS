@@ -87,7 +87,6 @@ Main.prototype.$split = str => {
   if (data.wordStack.length > 0) {
     data.segments.push(data.wordStack.join(""));
   }
-  console.log(data.segments);
   return data.segments;
 };
 
