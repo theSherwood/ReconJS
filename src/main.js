@@ -3,13 +3,8 @@
 function inWordStack(char, i, data) {
   const { segments, wordStack, numberStack, stringStack } = data;
   switch (true) {
-    case /[\w$]/.test(char):
+    case /[\w$]/.test(char): // letter, _, $, or digit
       data.wordStack.push(char);
-      break;
-    case /[\d]/.test(char):
-      segments.push(wordStack.join(""));
-      data.wordStack = [];
-      numberStack.push(char);
       break;
     case /['"]/.test(char):
       segments.push(wordStack.join(""));
@@ -24,10 +19,34 @@ function inWordStack(char, i, data) {
   }
 }
 
+function inNumberStack(char, i, data) {
+  const { segments, wordStack, numberStack, stringStack } = data;
+  switch (true) {
+    case /[\d]/.test(char):
+      numberStack.push(char);
+      break;
+    case /[\w$]/.test(char):
+      segments.push(numberStack.join(""));
+      data.numberStack = [];
+      wordStack.push(char);
+      break;
+    case /['"]/.test(char):
+      segments.push(numberStack.join(""));
+      data.numberStack = [];
+      stringStack.push(char);
+      break;
+    default:
+      segments.push(numberStack.join(""));
+      data.numberStack = [];
+      segments.push(char);
+      break;
+  }
+}
+
 function emptyStacks(char, i, data) {
   const { segments, wordStack, numberStack, stringStack } = data;
   switch (true) {
-    case /[\w$]/.test(char): // word character or _ or $
+    case /(?=[\w$])(?=[^\d])/.test(char): // word character or _ or $ but not digit
       wordStack.push(char);
       break;
     case /[\d]/.test(char): // digit
@@ -57,6 +76,9 @@ Main.prototype.$split = str => {
       case data.wordStack.length > 0: // a word is underway
         inWordStack(str[i], i, data);
         break;
+      case data.numberStack.length > 0: // a number is underway
+        inNumberStack(str[i], i, data);
+        break;
       default:
         emptyStacks(str[i], i, data);
     }
@@ -65,6 +87,7 @@ Main.prototype.$split = str => {
   if (data.wordStack.length > 0) {
     data.segments.push(data.wordStack.join(""));
   }
+  console.log(data.segments);
   return data.segments;
 };
 

@@ -53,6 +53,14 @@ describe("Main", function() {
       ]);
     });
 
+    it("considers digits to be word characters if they are not the first char in a word", () => {
+      expect(main.$split("o1ne t2wo")).toEqual(["o1ne", " ", "t2wo"]);
+    });
+
+    it("considers digits to not be word characters if they are the first char in a word", () => {
+      expect(main.$split("1one 2two")).toEqual(["1", "one", " ", "2", "two"]);
+    });
+
     // Numbers
     it("returns an array in which digit chars in series are added as one string", () => {
       expect(main.$split("123 456 ")).toEqual(["123", " ", "456", " "]);
