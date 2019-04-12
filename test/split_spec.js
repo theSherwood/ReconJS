@@ -70,4 +70,19 @@ describe("split", function() {
       ]);
     });
   });
+
+  describe("inStringStack", () => {
+    it("treats anything within ' ... ' as a single segment", () => {
+      expect(split("let x = 'Hello, [ ] { }' ")).toEqual([
+        "let",
+        " ",
+        "x",
+        " ",
+        "=",
+        " ",
+        "'Hello, [ ] { }'",
+        " "
+      ]);
+    });
+  });
 });

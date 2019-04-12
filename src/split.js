@@ -24,6 +24,9 @@
         case data.numberStack.length > 0: // a number is underway
           inNumberStack(str[i], i, data, flags);
           break;
+        case data.stringStack.length > 0: // a string is underway
+          inStringStack(str[i], i, data, flags);
+          break;
         default:
           emptyStacks(str[i], i, data, flags);
       }
@@ -84,6 +87,20 @@
         segments.push(numberStack.join(""));
         numberStack.length = 0;
         segments.push(char);
+        break;
+    }
+  };
+
+  const inStringStack = (char, i, data, flags) => {
+    const { wordStack, numberStack, stringStack, segments } = data;
+    switch (true) {
+      case stringStack[0] === char:
+        stringStack.push(char);
+        segments.push(stringStack.join(""));
+        stringStack.length = 0;
+        break;
+      default:
+        stringStack.push(char);
         break;
     }
   };
