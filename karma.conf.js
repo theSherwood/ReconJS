@@ -8,6 +8,19 @@ module.exports = function(config) {
     },
     browserify: {
       debug: true
+    },
+    reporters: ["progress", "html"],
+
+    htmlReporter: {
+      outputFile: "tests/units.html",
+
+      // Optional
+      pageTitle: "JSLite",
+      subPageTitle: "statically sanitize javascript",
+      groupSuites: true,
+      useCompactStyle: true,
+      useLegacyStyle: true,
+      showOnlyFailed: false
     }
   });
 };
