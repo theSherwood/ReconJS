@@ -84,5 +84,18 @@ describe("split", function() {
         " "
       ]);
     });
+
+    it("treats anything within ' ... ' as a single segment and loses the slashes", () => {
+      expect(split("let x = 'Hello, [ ] { }' ")).toEqual([
+        "let",
+        " ",
+        "x",
+        " ",
+        "=",
+        " ",
+        "'Hello, [ ] { }'",
+        " "
+      ]);
+    });
   });
 });
