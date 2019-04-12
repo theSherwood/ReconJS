@@ -51,13 +51,23 @@ describe("split", function() {
   });
 
   describe("inNumberStack", () => {
-    // Numbers
     it("returns an array in which digit chars in series are added as one string", () => {
       expect(split("123 456 ")).toEqual(["123", " ", "456", " "]);
     });
 
-    it("will include up to exactly 1 period ('.') as part of a number", () => {
+    it("will include up to 1 period ('.') as part of a number", () => {
       expect(split("1.23 .456 ")).toEqual(["1.23", " ", ".456", " "]);
+    });
+
+    it("will not include more than 1 period ('.') as part of a number", () => {
+      expect(split("1.2.3 .456. ")).toEqual([
+        "1.2",
+        ".3",
+        " ",
+        ".456",
+        ".",
+        " "
+      ]);
     });
   });
 });

@@ -63,11 +63,11 @@
         break;
       case /\./.test(char):
         if (flags.numberFlags.haveSeenPeriod) {
+          // there's already a period
           segments.push(numberStack.join(""));
-          segments.push(".");
-        } else {
-          numberStack.push(char);
+          numberStack.length = 0;
         }
+        numberStack.push(char);
         flags.numberFlags.haveSeenPeriod = !flags.numberFlags.haveSeenPeriod;
         break;
       case /[\w$]/.test(char):
