@@ -1,4 +1,13 @@
 "use strict";
+/*
+DEV NOTES:
+
+This needs to be more dynamic. Function calls rather than switch cases.
+
+TODOS:
+
+* Make a push function that looks for flags before it pushes and can more easily redirect to other places on the decision tree
+*/
 (function() {
   const split = str => {
     const data = {
@@ -13,23 +22,15 @@
     const flags = {
       numberFlags: {
         haveSeenPeriod: false
+      },
+      stringFlags: {
+        templateLiteral: false,
+        templateLitExpIndex: -1 // template literal expression ${...}
       }
     };
 
     for (let i = 0; i < str.length; i++) {
-      switch (true) {
-        case data.wordStack.length > 0: // a word is underway
-          inWordStack(str[i], i, data, flags);
-          break;
-        case data.numberStack.length > 0: // a number is underway
-          inNumberStack(str[i], i, data, flags);
-          break;
-        case data.stringStack.length > 0: // a string is underway
-          inStringStack(str[i], i, data, flags, str);
-          break;
-        default:
-          emptyStacks(str[i], i, data, flags);
-      }
+      primarySwitch(str[i], i, data, flags, str);
     }
 
     if (data.wordStack.length > 0) {
@@ -39,13 +40,30 @@
     return data.segments;
   };
 
-  const inWordStack = (char, i, data, flags) => {
-    const { wordStack, segments } = data;
+  const primarySwitch = (char, i, data, flags, str) => {
+    switch (true) {
+      case data.wordStack.length > 0: // a word is underway
+        inWordStack(str[i], i, data, flags, str);
+        break;
+      case data.numberStack.length > 0: // a number is underway
+        inNumberStack(str[i], i, data, flags, str);
+        break;
+      case data.stringStack.length > 0: // a string is underway
+        inStringStack(str[i], i, data, flags, str);
+        break;
+      default:
+        emptyStacks(str[i], i, data, flags, str);
+    }
+  };
+
+  const inWordStack = (char, i, data, flags, str) => {
+    const { wordStack, numberStack, stringStack, segments } = data;
     switch (true) {
       case /[\w$]/.test(char): // letter, _, $, or digit
         wordStack.push(char);
         break;
       case /[`'"]/.test(char):
+        if (char === "`") flags.stringFlags.templateLiteral = true;
         segments.push(wordStack.join(""));
         wordStack.length = 0;
         stringStack.push(char);
@@ -53,12 +71,12 @@
       default:
         segments.push(wordStack.join(""));
         wordStack.length = 0;
-        segments.push(char);
+        primarySwitch(char, i, data, flags, str);
         break;
     }
   };
 
-  const inNumberStack = (char, i, data, flags) => {
+  const inNumberStack = (char, i, data, flags, str) => {
     const { wordStack, numberStack, stringStack, segments } = data;
     switch (true) {
       case /[\d]/.test(char):
@@ -79,6 +97,7 @@
         wordStack.push(char);
         break;
       case /[`'"]/.test(char):
+        if (char === "`") flags.stringFlags.templateLiteral = true;
         segments.push(numberStack.join(""));
         numberStack.length = 0;
         stringStack.push(char);
@@ -86,7 +105,7 @@
       default:
         segments.push(numberStack.join(""));
         numberStack.length = 0;
-        segments.push(char);
+        primarySwitch(char, i, data, flags, str);
         break;
     }
   };
@@ -100,7 +119,27 @@
           // quote char has not been escaped
           segments.push(stringStack.join(""));
           stringStack.length = 0;
+          flags.stringFlags.templateLiteral = false;
         }
+        break;
+      case char === "$" && flags.stringFlags.templateLiteral:
+        if (isEscaped(i, str)) {
+          stringStack.push(char);
+        } else if (str[i + 1] === "{") {
+          flags.stringFlags.templateLitExpIndex = 0;
+          segments.push(stringStack.join(""));
+          stringStack.length = 0;
+        } else {
+          stringStack.push(char);
+        }
+        break;
+      case char === "`" &&
+        !isEscaped(i, str) &&
+        flags.stringFlags.templateLiteral:
+        stringStack.push(char);
+        segments.push(stringStack.join(""));
+        stringStack.length = 0;
+        flags.stringFlags.templateLiteral = false;
         break;
       default:
         stringStack.push(char);
@@ -108,9 +147,24 @@
     }
   };
 
-  const emptyStacks = (char, i, data, flags) => {
+  const emptyStacks = (char, i, data, flags, str) => {
     const { wordStack, numberStack, stringStack, segments } = data;
     switch (true) {
+      case flags.stringFlags.templateLiteral &&
+        flags.stringFlags.templateLitExpIndex === -1:
+        stringStack.push(char);
+        break;
+      case flags.stringFlags.templateLitExpIndex > -1:
+        // debugger;
+        if (char === "{" && flags.stringFlags.templateLitExpIndex === 0) {
+          flags.stringFlags.templateLitExpIndex++;
+          break;
+        } else if (char === "}" && !isEscaped(i, str)) {
+          flags.stringFlags.templateLitExpIndex = -1;
+          break;
+        } else {
+          flags.stringFlags.templateLitExpIndex++;
+        }
       case /(?=[\w$])(?=[^\d])/.test(char): // word character or _ or $ but not digit
         wordStack.push(char);
         break;
@@ -119,6 +173,7 @@
         if (char === ".") flags.numberFlags.haveSeenPeriod = true;
         break;
       case /[`'"]/.test(char): // starts a string
+        if (char === "`") flags.stringFlags.templateLiteral = true;
         stringStack.push(char);
         break;
       default:
@@ -141,6 +196,10 @@
       }
     }
   };
+
+  // function push(stack, char, data, flags) {
+  //   stack.push(char)
+  // }
 
   module.exports = split;
 })();
