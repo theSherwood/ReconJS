@@ -16,4 +16,18 @@ describe("handleTemplateLiteral", () => {
       " { } `"
     ]);
   });
+
+  it("handles`...` with one, complex expression", () => {
+    expect(handleTemplateLiteral(0, "`Hello ${ a + b } { } `")).toEqual([
+      "`Hello ",
+      " ",
+      "a",
+      " ",
+      "+",
+      " ",
+      "b",
+      " ",
+      " { } `"
+    ]);
+  });
 });
