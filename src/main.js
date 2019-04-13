@@ -1,113 +1,12 @@
-// "use strict";
+"use strict";
 
-// function inWordStack(char, i, data) {
-//   const { segments, wordStack, numberStack, stringStack } = data;
-//   switch (true) {
-//     case /[\w$]/.test(char): // letter, _, $, or digit
-//       data.wordStack.push(char);
-//       break;
-//     case /['"]/.test(char):
-//       segments.push(wordStack.join(""));
-//       data.wordStack = [];
-//       stringStack.push(char);
-//       break;
-//     default:
-//       segments.push(wordStack.join(""));
-//       data.wordStack = [];
-//       segments.push(char);
-//       break;
-//   }
-// }
+(function() {
+  const split = require("./split");
 
-// function inNumberStack(char, i, data) {
-//   const { segments, wordStack, numberStack, stringStack } = data;
-//   switch (true) {
-//     case /[\d]/.test(char):
-//       numberStack.push(char);
-//       break;
-//     case /\./.test(char):
-//       if (this.flags.numberFlags.haveSeenPeriod) {
-//         segments.push(numberStack.join(""));
-//         segments.push(".");
-//       } else {
-//         numberStack.push(char);
-//       }
-//       flags.numberFlags.haveSeenPeriod = !flags.numberFlags.haveSeenPeriod;
-//       break;
-//     case /[\w$]/.test(char):
-//       segments.push(numberStack.join(""));
-//       data.numberStack = [];
-//       wordStack.push(char);
-//       break;
-//     case /['"]/.test(char):
-//       segments.push(numberStack.join(""));
-//       data.numberStack = [];
-//       stringStack.push(char);
-//       break;
-//     default:
-//       segments.push(numberStack.join(""));
-//       data.numberStack = [];
-//       segments.push(char);
-//       break;
-//   }
-// }
+  function Main() {}
 
-// function emptyStacks(char, i, data) {
-//   const { segments, wordStack, numberStack, stringStack } = data;
-//   switch (true) {
-//     case /(?=[\w$])(?=[^\d])/.test(char): // word character or _ or $ but not digit
-//       wordStack.push(char);
-//       break;
-//     case /[\d\.]/.test(char): // starts a number (int or float)
-//       numberStack.push(char);
-//       if (char === ".") flags.numberFlags.haveSeenPeriod = true;
-//       break;
-//     case /['"]/.test(char): // starts a string
-//       stringStack.push(char);
-//       break;
-//     default:
-//       segments.push(char); // starts no stack
-//       break;
-//   }
-// }
-
-// function Main() {}
-
-// Main.prototype.$split = str => {
-//   const data = {
-//     segments: [],
-
-//     // Segments in progress
-//     wordStack: [],
-//     numberStack: [],
-//     stringStack: []
-//   };
-
-//   const flags = {
-//     numberFlags: {
-//       haveSeenPeriod: false
-//     }
-//   };
-
-//   for (let i = 0; i < str.length; i++) {
-//     switch (true) {
-//       case data.wordStack.length > 0: // a word is underway
-//         inWordStack(str[i], i, data);
-//         break;
-//       case data.numberStack.length > 0: // a number is underway
-//         inNumberStack(str[i], i, data);
-//         break;
-//       default:
-//         emptyStacks(str[i], i, data);
-//     }
-//   }
-
-//   if (data.wordStack.length > 0) {
-//     data.segments.push(data.wordStack.join(""));
-//   }
-//   console.log(str, data.segments);
-//   return data.segments;
-// };
+  module.exports = Main;
+});
 
 // // Main.prototype.split = function(str) {
 // //   let split = [];
@@ -425,5 +324,3 @@
 // //   'undefined', 'NaN', 'Math', 'Number', 'Object', 'Array', 'Set', 'Map', 'Date', 'alert', 'console', 'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'JSON', 'parseFloat', 'parseInt', 'prototype', 'String', 'setTimeout', 'setInterval', 'isPrototypeOf', 'isNaN', 'toString', 'of', 'Boolean', 'RegExp', 'Infinity', 'isFinite', 'Function', 'Symbol', 'Error', 'BigInt', 'Generator', 'GeneratorFunction', 'Promise', 'async', 'await', 'AsyncFunction'
 // // ]
 // // */
-
-// module.exports = Main;
