@@ -149,10 +149,4 @@ describe("split", function() {
     //   ]);
     // });
   });
-
-  describe("handleTemplateLiteral", () => {
-    it("treats simple `...` without expressions as one element", () => {
-      expect(split(`Hello '[ ]' { } `)).toEqual(["`Hello '[ ]' { } `"]);
-    });
-  });
 });
