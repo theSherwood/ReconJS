@@ -116,5 +116,18 @@ describe("split", function() {
         "\"Hello '['Hello\\\"Hello\\\"Hello']' Hello\""
       ]);
     });
+
+    it("handles plain `...` as a string", () => {
+      expect(split("let x = `Hello [ ] { }` ")).toEqual([
+        "let",
+        " ",
+        "x",
+        " ",
+        "=",
+        " ",
+        "`Hello [ ] { }`",
+        " "
+      ]);
+    });
   });
 });

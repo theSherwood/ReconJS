@@ -45,7 +45,7 @@
       case /[\w$]/.test(char): // letter, _, $, or digit
         wordStack.push(char);
         break;
-      case /['"]/.test(char):
+      case /[`'"]/.test(char):
         segments.push(wordStack.join(""));
         wordStack.length = 0;
         stringStack.push(char);
@@ -78,7 +78,7 @@
         numberStack.length = 0;
         wordStack.push(char);
         break;
-      case /['"]/.test(char):
+      case /[`'"]/.test(char):
         segments.push(numberStack.join(""));
         numberStack.length = 0;
         stringStack.push(char);
@@ -118,7 +118,7 @@
         numberStack.push(char);
         if (char === ".") flags.numberFlags.haveSeenPeriod = true;
         break;
-      case /['"]/.test(char): // starts a string
+      case /[`'"]/.test(char): // starts a string
         stringStack.push(char);
         break;
       default:
