@@ -30,4 +30,14 @@ describe("handleTemplateLiteral", () => {
       " { } `"
     ]);
   });
+
+  it("handles`...` with two, simple expressions", () => {
+    expect(handleTemplateLiteral(0, "`word ${a} word ${b} `")).toEqual([
+      "`word ",
+      "a",
+      " word ",
+      "b",
+      " `"
+    ]);
+  });
 });
