@@ -12,6 +12,7 @@ TODOS:
 
 (function() {
   const handleTemplateLiteral = require("./handleTemplateLiteral");
+  const u = require("./utils");
 
   const split = str => {
     const data = {
@@ -129,7 +130,7 @@ TODOS:
     switch (true) {
       case stringStack[0] === char:
         stringStack.push(char);
-        if (!isEscaped(i, str)) {
+        if (!u.isEscaped(i, str)) {
           // quote char has not been escaped
           segments.push(stringStack.join(""));
           stringStack.length = 0;
@@ -137,7 +138,7 @@ TODOS:
         }
         break;
       case char === "$" && flags.stringFlags.templateLiteral:
-        if (isEscaped(i, str)) {
+        if (u.isEscaped(i, str)) {
           stringStack.push(char);
         } else if (str[i + 1] === "{") {
           flags.stringFlags.templateLitExpIndex = 0;
@@ -148,7 +149,7 @@ TODOS:
         }
         break;
       case char === "`" &&
-        !isEscaped(i, str) &&
+        !u.isEscaped(i, str) &&
         flags.stringFlags.templateLiteral:
         stringStack.push(char);
         segments.push(stringStack.join(""));
@@ -173,7 +174,7 @@ TODOS:
         if (char === "{" && flags.stringFlags.templateLitExpIndex === 0) {
           flags.stringFlags.templateLitExpIndex++;
           break;
-        } else if (char === "}" && !isEscaped(i, str)) {
+        } else if (char === "}" && !u.isEscaped(i, str)) {
           flags.stringFlags.templateLitExpIndex = -1;
           break;
         } else {
@@ -197,21 +198,6 @@ TODOS:
       default:
         segments.push(char); // starts no stack
         break;
-    }
-  };
-
-  const isEscaped = (i, str) => {
-    // Check before str[i] for odd-number of consecutive backslashes
-    let count = 0;
-    while (count <= i) {
-      if (str[i - 1 - count] === "\\") {
-        count++;
-      } else {
-        if (count % 2 > 0) {
-          return true;
-        }
-        return false;
-      }
     }
   };
 
