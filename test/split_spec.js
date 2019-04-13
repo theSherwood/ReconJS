@@ -73,28 +73,47 @@ describe("split", function() {
 
   describe("inStringStack", () => {
     it("treats anything within ' ... ' as a single segment", () => {
-      expect(split("let x = 'Hello, [ ] { }' ")).toEqual([
+      expect(split("let x = 'Hello [ ] { }' ")).toEqual([
         "let",
         " ",
         "x",
         " ",
         "=",
         " ",
-        "'Hello, [ ] { }'",
+        "'Hello [ ] { }'",
         " "
       ]);
     });
 
-    it("treats anything within ' ... ' as a single segment and loses the slashes", () => {
-      expect(split("let x = 'Hello, [ ] { }' ")).toEqual([
+    it('treats anything within " ... " as a single segment', () => {
+      expect(split('let x = "Hello [ ] { }" ')).toEqual([
         "let",
         " ",
         "x",
         " ",
         "=",
         " ",
-        "'Hello, [ ] { }'",
+        '"Hello [ ] { }"',
         " "
+      ]);
+    });
+
+    it("treats anything within \" ... \" as a single segment including '...'", () => {
+      expect(split("let x = \"Hello '[ ]' { }\" ")).toEqual([
+        "let",
+        " ",
+        "x",
+        " ",
+        "=",
+        " ",
+        "\"Hello '[ ]' { }\"",
+        " "
+      ]);
+    });
+
+    it("treats anything within quotes as a string, even nested strings", () => {
+      expect(split("\"Hello '['Hello\\\"Hello\\\"Hello']' Hello\"")).toEqual([
+        "\"Hello '['Hello\\\"Hello\\\"Hello']' Hello\""
       ]);
     });
   });

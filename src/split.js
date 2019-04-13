@@ -25,7 +25,7 @@
           inNumberStack(str[i], i, data, flags);
           break;
         case data.stringStack.length > 0: // a string is underway
-          inStringStack(str[i], i, data, flags);
+          inStringStack(str[i], i, data, flags, str);
           break;
         default:
           emptyStacks(str[i], i, data, flags);
@@ -91,13 +91,16 @@
     }
   };
 
-  const inStringStack = (char, i, data, flags) => {
+  const inStringStack = (char, i, data, flags, str) => {
     const { wordStack, numberStack, stringStack, segments } = data;
     switch (true) {
       case stringStack[0] === char:
         stringStack.push(char);
-        segments.push(stringStack.join(""));
-        stringStack.length = 0;
+        if (!isEscaped(i, str)) {
+          // quote char has not been escaped
+          segments.push(stringStack.join(""));
+          stringStack.length = 0;
+        }
         break;
       default:
         stringStack.push(char);
@@ -121,6 +124,21 @@
       default:
         segments.push(char); // starts no stack
         break;
+    }
+  };
+
+  const isEscaped = (i, str) => {
+    // Check before str[i] for odd-number of consecutive backslashes
+    let count = 0;
+    while (count <= i) {
+      if (str[i - 1 - count] === "\\") {
+        count++;
+      } else {
+        if (count % 2 > 0) {
+          return true;
+        }
+        return false;
+      }
     }
   };
 
