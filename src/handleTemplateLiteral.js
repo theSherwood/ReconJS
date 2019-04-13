@@ -1,6 +1,7 @@
 "use strict";
 
 (function() {
+  const split = require("./split");
   const u = require("./utils");
 
   const handleTemplateLiteral = (i, str) => {
@@ -8,8 +9,8 @@
     let templateSegment = 0;
     let templateExpressionFlag = false;
     const templateExpression = [];
+    debugger;
     for (let j = i + 1; j < str.length; j++) {
-      // debugger;
       switch (true) {
         case templateExpressionFlag:
           templateExpression.push(str[j]);
@@ -26,6 +27,9 @@
         case str[j] === "$" && !u.isEscaped(j, str):
           if (j + 1 < str.length && str[j + 1] === "{") {
             templateExpressionFlag = true;
+            templateLiteralStacks[templateSegment] = templateLiteralStacks[
+              templateSegment
+            ].join("");
           }
           break;
         case str[j] === "`" && !u.isEscaped(j, str):
@@ -33,6 +37,7 @@
           templateLiteralStacks[templateSegment] = templateLiteralStacks[
             templateSegment
           ].join("");
+          console.log(str, templateLiteralStacks);
           return templateLiteralStacks;
         default:
           templateLiteralStacks[templateSegment].push(str[j]);

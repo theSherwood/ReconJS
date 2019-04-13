@@ -8,4 +8,12 @@ describe("handleTemplateLiteral", () => {
       "`Hello '[ ]' { } `"
     ]);
   });
+
+  it("handles`...` with one, simple expression", () => {
+    expect(handleTemplateLiteral(0, "`Hello ${a} { } `")).toEqual([
+      "`Hello ",
+      "a",
+      " { } `"
+    ]);
+  });
 });
