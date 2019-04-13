@@ -62,11 +62,16 @@ TODOS:
       case /[\w$]/.test(char): // letter, _, $, or digit
         wordStack.push(char);
         break;
-      case /[`'"]/.test(char):
-        if (char === "`") flags.stringFlags.templateLiteral = true;
+      case /['"]/.test(char):
+        // if (char === "`") flags.stringFlags.templateLiteral = true;
         segments.push(wordStack.join(""));
         wordStack.length = 0;
         stringStack.push(char);
+        break;
+      case /[`]/.test(char):
+        segments.push(wordStack.join(""));
+        wordStack.length = 0;
+        segments.push(...handleTemplateLiteral(char, i, data, flags, str));
         break;
       default:
         segments.push(wordStack.join(""));
@@ -96,11 +101,16 @@ TODOS:
         numberStack.length = 0;
         wordStack.push(char);
         break;
-      case /[`'"]/.test(char):
-        if (char === "`") flags.stringFlags.templateLiteral = true;
+      case /['"]/.test(char):
+        // if (char === "`") flags.stringFlags.templateLiteral = true;
         segments.push(numberStack.join(""));
         numberStack.length = 0;
         stringStack.push(char);
+        break;
+      case /[`]/.test(char):
+        segments.push(numberStack.join(""));
+        numberStack.length = 0;
+        segments.push(...handleTemplateLiteral(char, i, data, flags, str));
         break;
       default:
         segments.push(numberStack.join(""));
@@ -155,7 +165,7 @@ TODOS:
         stringStack.push(char);
         break;
       case flags.stringFlags.templateLitExpIndex > -1:
-        // debugger;
+        if (char === " ") debugger;
         if (char === "{" && flags.stringFlags.templateLitExpIndex === 0) {
           flags.stringFlags.templateLitExpIndex++;
           break;
@@ -164,6 +174,7 @@ TODOS:
           break;
         } else {
           flags.stringFlags.templateLitExpIndex++;
+          break;
         }
       case /(?=[\w$])(?=[^\d])/.test(char): // word character or _ or $ but not digit
         wordStack.push(char);
@@ -172,9 +183,12 @@ TODOS:
         numberStack.push(char);
         if (char === ".") flags.numberFlags.haveSeenPeriod = true;
         break;
-      case /[`'"]/.test(char): // starts a string
-        if (char === "`") flags.stringFlags.templateLiteral = true;
+      case /['"]/.test(char): // starts a string
+        // if (char === "`") flags.stringFlags.templateLiteral = true;
         stringStack.push(char);
+        break;
+      case /[`]/.test(char):
+        segments.push(...handleTemplateLiteral(char, i, data, flags, str));
         break;
       default:
         segments.push(char); // starts no stack
@@ -193,6 +207,41 @@ TODOS:
           return true;
         }
         return false;
+      }
+    }
+  };
+
+  const handleTemplateLiteral = (char, i, data, flags, str) => {
+    const templateLiteralStacks = [["`"]];
+    let templateSegment = 1;
+    let templateExpressionFlag = false;
+    const templateExpression = [];
+    for (let j = i + 1; j < str.length; j++) {
+      switch (true) {
+        case templateExpressionFlag:
+          templateExpression.push(str[j]);
+          if (str[j] === "}" && !isEscaped(j, str)) {
+            templateLiteralStacks.push(
+              ...split(templateExpression.slice(1, -1).join(""))
+            );
+            templateExpressionFlag = false;
+            templateExpression.length = 0;
+            templateSegment = templateLiteralStacks.length;
+            templateLiteralStacks.push([]);
+          }
+          break;
+        case str[j] === "$" && !isEscaped(j, str):
+          if (j + 1 < str.length && str[j + 1] === "{") {
+            templateExpressionFlag = true;
+          }
+          break;
+        case str[j] === "`" && !isEscaped(j, str):
+          templateLiteralStacks[templateSegment].push(str[j]);
+          // data.segments.push(...templateLiteralStacks);
+          return templateLiteralStacks;
+        default:
+          templateLiteralStacks[templateSegment].push(str[j]);
+          break;
       }
     }
   };
