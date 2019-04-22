@@ -224,6 +224,10 @@ TODOS:
             templateSegment
           ].join("");
           return templateLiteralStacks;
+        case j === str.length - 1:
+          if (str[j] !== "`") {
+            throw new Error("Missing closing ` ");
+          }
         default:
           templateLiteralStacks[templateSegment].push(str[j]);
           break;

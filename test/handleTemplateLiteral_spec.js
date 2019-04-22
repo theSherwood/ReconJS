@@ -64,4 +64,10 @@ describe("handleTemplateLiteral", () => {
       handleTemplateLiteral(0, "`word ${a + ` word ${c} word ` + b} word`")
     ).toThrow(new Error("Cannot parse nested template literals"));
   });
+
+  it("throws an error if missing closing ` ", () => {
+    expect(() => handleTemplateLiteral(0, "`word ${a + b} word")).toThrow(
+      new Error("Missing closing ` ")
+    );
+  });
 });
