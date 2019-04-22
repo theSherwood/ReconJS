@@ -146,7 +146,7 @@ describe("split", function() {
     });
   });
   describe("handleTemplateLiteral", () => {
-    it("handles a template literal within a larger string", () => {
+    it("handles a simple template literal", () => {
       expect(split("let x = `hello ${y}`")).toEqual([
         "let",
         " ",
@@ -156,6 +156,26 @@ describe("split", function() {
         " ",
         "`hello ",
         "y",
+        "`"
+      ]);
+    });
+
+    it("handles a complex template literal", () => {
+      expect(split("let a = `hello ${x + y} and ${z}`")).toEqual([
+        "let",
+        " ",
+        "a",
+        " ",
+        "=",
+        " ",
+        "`hello ",
+        "x",
+        " ",
+        "+",
+        " ",
+        "y",
+        " and ",
+        "z",
         "`"
       ]);
     });
