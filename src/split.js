@@ -13,15 +13,13 @@ TODOS:
 (function() {
   const u = require("./utils");
 
-  const split = str => {
-    const data = {
-      segments: [],
+  function split(str) {
+    const segments = [];
 
-      // Segments in progress
-      wordStack: [],
-      numberStack: [],
-      stringStack: []
-    };
+    // Segments in progress
+    const wordStack = [];
+    const numberStack = [];
+    const stringStack = [];
 
     const flags = {
       numberFlags: {
@@ -33,161 +31,164 @@ TODOS:
       }
     };
 
-    for (let i = 0; i < str.length; i++) {
-      primarySwitch(str[i], i, data, flags, str);
-    }
+    let i = 0;
 
-    if (data.wordStack.length > 0) {
-      data.segments.push(data.wordStack.join(""));
-    }
-    if (data.numberStack.length > 0) {
-      data.segments.push(data.numberStack.join(""));
-    }
-    if (data.stringStack.length > 0) {
-      throw new Error("Missing closing quote");
-    }
-    // console.log(str, data.segments);
-    return data.segments;
-  };
+    const primarySwitch = char => {
+      switch (true) {
+        case wordStack.length > 0: // a word is underway
+          inWordStack(char);
+          break;
+        case numberStack.length > 0: // a number is underway
+          inNumberStack(char);
+          break;
+        case stringStack.length > 0: // a string is underway
+          inStringStack(char);
+          break;
+        default:
+          emptyStacks(char);
+      }
+    };
 
-  const primarySwitch = (char, i, data, flags, str) => {
-    switch (true) {
-      case data.wordStack.length > 0: // a word is underway
-        inWordStack(str[i], i, data, flags, str);
-        break;
-      case data.numberStack.length > 0: // a number is underway
-        inNumberStack(str[i], i, data, flags, str);
-        break;
-      case data.stringStack.length > 0: // a string is underway
-        inStringStack(str[i], i, data, flags, str);
-        break;
-      default:
-        emptyStacks(str[i], i, data, flags, str);
-    }
-  };
+    const inWordStack = char => {
+      switch (true) {
+        case /[\w$]/.test(char): // letter, _, $, or digit
+          wordStack.push(char);
+          break;
+        case /['"]/.test(char):
+          // if (char === "`") flags.stringFlags.templateLiteral = true;
+          segments.push(wordStack.join(""));
+          wordStack.length = 0;
+          stringStack.push(char);
+          break;
+        case /[`]/.test(char):
+          segments.push(wordStack.join(""));
+          wordStack.length = 0;
+          segments.push(...handleTemplateLiteral(str)[1]);
+          break;
+        default:
+          segments.push(wordStack.join(""));
+          wordStack.length = 0;
+          primarySwitch(char);
+          break;
+      }
+    };
 
-  const inWordStack = (char, i, data, flags, str) => {
-    const { wordStack, numberStack, stringStack, segments } = data;
-    switch (true) {
-      case /[\w$]/.test(char): // letter, _, $, or digit
-        wordStack.push(char);
-        break;
-      case /['"]/.test(char):
-        // if (char === "`") flags.stringFlags.templateLiteral = true;
-        segments.push(wordStack.join(""));
-        wordStack.length = 0;
-        stringStack.push(char);
-        break;
-      case /[`]/.test(char):
-        segments.push(wordStack.join(""));
-        wordStack.length = 0;
-        segments.push(...handleTemplateLiteral(i, str));
-        break;
-      default:
-        segments.push(wordStack.join(""));
-        wordStack.length = 0;
-        primarySwitch(char, i, data, flags, str);
-        break;
-    }
-  };
-
-  const inNumberStack = (char, i, data, flags, str) => {
-    const { wordStack, numberStack, stringStack, segments } = data;
-    switch (true) {
-      case /[\d]/.test(char):
-        numberStack.push(char);
-        break;
-      case /\./.test(char):
-        if (flags.numberFlags.haveSeenPeriod) {
-          // there's already a period
+    const inNumberStack = char => {
+      switch (true) {
+        case /[\d]/.test(char):
+          numberStack.push(char);
+          break;
+        case /\./.test(char):
+          if (flags.numberFlags.haveSeenPeriod) {
+            // there's already a period
+            segments.push(numberStack.join(""));
+            numberStack.length = 0;
+          }
+          numberStack.push(char);
+          flags.numberFlags.haveSeenPeriod = !flags.numberFlags.haveSeenPeriod;
+          break;
+        case /[\w$]/.test(char):
           segments.push(numberStack.join(""));
           numberStack.length = 0;
-        }
-        numberStack.push(char);
-        flags.numberFlags.haveSeenPeriod = !flags.numberFlags.haveSeenPeriod;
-        break;
-      case /[\w$]/.test(char):
-        segments.push(numberStack.join(""));
-        numberStack.length = 0;
-        wordStack.push(char);
-        break;
-      case /['"]/.test(char):
-        // if (char === "`") flags.stringFlags.templateLiteral = true;
-        segments.push(numberStack.join(""));
-        numberStack.length = 0;
-        stringStack.push(char);
-        break;
-      case /[`]/.test(char):
-        segments.push(numberStack.join(""));
-        numberStack.length = 0;
-        segments.push(...handleTemplateLiteral(i, str));
-        break;
-      default:
-        segments.push(numberStack.join(""));
-        numberStack.length = 0;
-        primarySwitch(char, i, data, flags, str);
-        break;
-    }
-  };
+          wordStack.push(char);
+          break;
+        case /['"]/.test(char):
+          // if (char === "`") flags.stringFlags.templateLiteral = true;
+          segments.push(numberStack.join(""));
+          numberStack.length = 0;
+          stringStack.push(char);
+          break;
+        case /[`]/.test(char):
+          segments.push(numberStack.join(""));
+          numberStack.length = 0;
+          const [j, templateLiteralSegments] = handleTemplateLiteral(i, str);
+          segments.push(...templateLiteralSegments);
+          i = j;
+          break;
+        default:
+          segments.push(numberStack.join(""));
+          numberStack.length = 0;
+          primarySwitch(char);
+          break;
+      }
+    };
 
-  const inStringStack = (char, i, data, flags, str) => {
-    const { wordStack, numberStack, stringStack, segments } = data;
-    switch (true) {
-      case stringStack[0] === char:
-        stringStack.push(char);
-        if (!u.isEscaped(i, str)) {
-          // quote char has not been escaped
+    const inStringStack = char => {
+      switch (true) {
+        case stringStack[0] === char:
+          stringStack.push(char);
+          if (!u.isEscaped(i, str)) {
+            // quote char has not been escaped
+            segments.push(stringStack.join(""));
+            stringStack.length = 0;
+            flags.stringFlags.templateLiteral = false;
+          }
+          break;
+        case char === "$" && flags.stringFlags.templateLiteral:
+          if (u.isEscaped(i, str)) {
+            stringStack.push(char);
+          } else if (str[i + 1] === "{") {
+            flags.stringFlags.templateLitExpIndex = 0;
+            segments.push(stringStack.join(""));
+            stringStack.length = 0;
+          } else {
+            stringStack.push(char);
+          }
+          break;
+        case char === "`" &&
+          !u.isEscaped(i, str) &&
+          flags.stringFlags.templateLiteral:
+          stringStack.push(char);
           segments.push(stringStack.join(""));
           stringStack.length = 0;
           flags.stringFlags.templateLiteral = false;
-        }
-        break;
-      case char === "$" && flags.stringFlags.templateLiteral:
-        if (u.isEscaped(i, str)) {
+          break;
+        default:
           stringStack.push(char);
-        } else if (str[i + 1] === "{") {
-          flags.stringFlags.templateLitExpIndex = 0;
-          segments.push(stringStack.join(""));
-          stringStack.length = 0;
-        } else {
-          stringStack.push(char);
-        }
-        break;
-      case char === "`" &&
-        !u.isEscaped(i, str) &&
-        flags.stringFlags.templateLiteral:
-        stringStack.push(char);
-        segments.push(stringStack.join(""));
-        stringStack.length = 0;
-        flags.stringFlags.templateLiteral = false;
-        break;
-      default:
-        stringStack.push(char);
-        break;
-    }
-  };
+          break;
+      }
+    };
 
-  const emptyStacks = (char, i, data, flags, str) => {
-    const { wordStack, numberStack, stringStack, segments } = data;
-    switch (true) {
-      case /(?=[\w$])(?=[^\d])/.test(char): // word character or _ or $ but not digit
-        wordStack.push(char);
-        break;
-      case /[\d\.]/.test(char): // starts a number (int or float)
-        numberStack.push(char);
-        if (char === ".") flags.numberFlags.haveSeenPeriod = true;
-        break;
-      case /['"]/.test(char): // starts a string
-        stringStack.push(char);
-        break;
-      case /[`]/.test(char):
-        const templateLiteralSegments = handleTemplateLiteral(i, str);
-        break;
-      default:
-        segments.push(char); // starts no stack
-        break;
+    const emptyStacks = char => {
+      switch (true) {
+        case /(?=[\w$])(?=[^\d])/.test(char): // word character or _ or $ but not digit
+          wordStack.push(char);
+          break;
+        case /[\d\.]/.test(char): // starts a number (int or float)
+          numberStack.push(char);
+          if (char === ".") flags.numberFlags.haveSeenPeriod = true;
+          break;
+        case /['"]/.test(char): // starts a string
+          stringStack.push(char);
+          break;
+        case /[`]/.test(char):
+          const [j, templateLiteralSegments] = handleTemplateLiteral(i, str);
+          segments.push(...templateLiteralSegments);
+          i = j;
+          break;
+        default:
+          segments.push(char); // starts no stack
+          break;
+      }
+    };
+
+    while (i < str.length) {
+      primarySwitch(str[i]);
+      i++;
     }
-  };
+
+    if (wordStack.length > 0) {
+      segments.push(wordStack.join(""));
+    }
+    if (numberStack.length > 0) {
+      segments.push(numberStack.join(""));
+    }
+    if (stringStack.length > 0) {
+      throw new Error("Missing closing quote");
+    }
+    // console.log(str,  segments);
+    return segments;
+  }
 
   const handleTemplateLiteral = (i, str) => {
     const templateLiteralStacks = [["`"]];
@@ -223,7 +224,7 @@ TODOS:
           templateLiteralStacks[templateSegment] = templateLiteralStacks[
             templateSegment
           ].join("");
-          return templateLiteralStacks;
+          return [j, templateLiteralStacks];
         case j === str.length - 1:
           if (str[j] !== "`") {
             throw new Error("Missing closing ` ");

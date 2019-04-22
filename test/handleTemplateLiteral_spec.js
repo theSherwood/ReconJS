@@ -4,13 +4,13 @@ const { handleTemplateLiteral } = require("../src/split");
 
 describe("handleTemplateLiteral", () => {
   it("treats simple `...` without expressions as one element", () => {
-    expect(handleTemplateLiteral(0, "`Hello '[ ]' { } `")).toEqual([
+    expect(handleTemplateLiteral(0, "`Hello '[ ]' { } `")[1]).toEqual([
       "`Hello '[ ]' { } `"
     ]);
   });
 
   it("handles `...` with one, simple expression", () => {
-    expect(handleTemplateLiteral(0, "`Hello ${a} { } `")).toEqual([
+    expect(handleTemplateLiteral(0, "`Hello ${a} { } `")[1]).toEqual([
       "`Hello ",
       "a",
       " { } `"
@@ -18,7 +18,7 @@ describe("handleTemplateLiteral", () => {
   });
 
   it("handles `...` with one, complex expression", () => {
-    expect(handleTemplateLiteral(0, "`Hello ${ a + b } { } `")).toEqual([
+    expect(handleTemplateLiteral(0, "`Hello ${ a + b } { } `")[1]).toEqual([
       "`Hello ",
       " ",
       "a",
@@ -32,7 +32,7 @@ describe("handleTemplateLiteral", () => {
   });
 
   it("handles `...` with two, simple expressions", () => {
-    expect(handleTemplateLiteral(0, "`word ${a} word ${b} `")).toEqual([
+    expect(handleTemplateLiteral(0, "`word ${a} word ${b} `")[1]).toEqual([
       "`word ",
       "a",
       " word ",
@@ -42,7 +42,9 @@ describe("handleTemplateLiteral", () => {
   });
 
   it("handles `...` with two, complex expressions", () => {
-    expect(handleTemplateLiteral(0, "`word ${a + b} word ${b - c} `")).toEqual([
+    expect(
+      handleTemplateLiteral(0, "`word ${a + b} word ${b - c} `")[1]
+    ).toEqual([
       "`word ",
       "a",
       " ",

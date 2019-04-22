@@ -145,4 +145,19 @@ describe("split", function() {
       );
     });
   });
+  describe("handleTemplateLiteral", () => {
+    it("handles a template literal within a larger string", () => {
+      expect(split("let x = `hello ${y}`")).toEqual([
+        "let",
+        " ",
+        "x",
+        " ",
+        "=",
+        " ",
+        "`hello ",
+        "y",
+        "`"
+      ]);
+    });
+  });
 });
