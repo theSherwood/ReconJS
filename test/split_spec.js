@@ -69,6 +69,10 @@ describe("split", function() {
         " "
       ]);
     });
+
+    it("will handle a number if it is in final set of characters", () => {
+      expect(split("123 456")).toEqual(["123", " ", "456"]);
+    });
   });
 
   describe("inStringStack", () => {

@@ -40,6 +40,9 @@ TODOS:
     if (data.wordStack.length > 0) {
       data.segments.push(data.wordStack.join(""));
     }
+    if (data.numberStack.length > 0) {
+      data.segments.push(data.numberStack.join(""));
+    }
     // console.log(str, data.segments);
     return data.segments;
   };
