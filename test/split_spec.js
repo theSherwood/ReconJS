@@ -1,6 +1,6 @@
 "use strict";
 
-const split = require("../src/split");
+const { split } = require("../src/split");
 
 describe("split", function() {
   describe("emptyStacks", () => {
@@ -110,43 +110,5 @@ describe("split", function() {
         " "
       ]);
     });
-
-    // it("handles plain `...` as a string", () => {
-    //   expect(split("let x = `Hello [ ] { }` ")).toEqual([
-    //     "let",
-    //     " ",
-    //     "x",
-    //     " ",
-    //     "=",
-    //     " ",
-    //     "`Hello [ ] { }`",
-    //     " "
-    //   ]);
-    // });
-
-    // it("treats anything within quotes as a string, even nested strings", () => {
-    //   expect(
-    //     split("\"Hello '['Hel`lo\\\"Hel`lo\\\"Hel`lo']' Hel`lo\"")
-    //   ).toEqual(["\"Hello '['Hel`lo\\\"Hel`lo\\\"Hel`lo']' Hel`lo\""]);
-    // });
-
-    // it("handles `...${...}...` as two strings with something else in the middle", () => {
-    //   expect(split("let x = `Hello ${y + z} cucumber` ")).toEqual([
-    //     "let",
-    //     " ",
-    //     "x",
-    //     " ",
-    //     "=",
-    //     " ",
-    //     "`Hello ",
-    //     "y",
-    //     " ",
-    //     "+",
-    //     " ",
-    //     "z",
-    //     " cucumber`",
-    //     " "
-    //   ]);
-    // });
   });
 });

@@ -11,7 +11,6 @@ TODOS:
 */
 
 (function() {
-  const handleTemplateLiteral = require("./handleTemplateLiteral");
   const u = require("./utils");
 
   const split = str => {
@@ -41,7 +40,7 @@ TODOS:
     if (data.wordStack.length > 0) {
       data.segments.push(data.wordStack.join(""));
     }
-    console.log(str, data.segments);
+    // console.log(str, data.segments);
     return data.segments;
   };
 
@@ -76,7 +75,7 @@ TODOS:
       case /[`]/.test(char):
         segments.push(wordStack.join(""));
         wordStack.length = 0;
-        segments.push(...handleTemplateLiteral(char, i, data, flags, str));
+        segments.push(...handleTemplateLiteral(i, str));
         break;
       default:
         segments.push(wordStack.join(""));
@@ -115,7 +114,7 @@ TODOS:
       case /[`]/.test(char):
         segments.push(numberStack.join(""));
         numberStack.length = 0;
-        segments.push(...handleTemplateLiteral(char, i, data, flags, str));
+        segments.push(...handleTemplateLiteral(i, str));
         break;
       default:
         segments.push(numberStack.join(""));
@@ -165,22 +164,6 @@ TODOS:
   const emptyStacks = (char, i, data, flags, str) => {
     const { wordStack, numberStack, stringStack, segments } = data;
     switch (true) {
-      case flags.stringFlags.templateLiteral &&
-        flags.stringFlags.templateLitExpIndex === -1:
-        stringStack.push(char);
-        break;
-      case flags.stringFlags.templateLitExpIndex > -1:
-        if (char === " ") debugger;
-        if (char === "{" && flags.stringFlags.templateLitExpIndex === 0) {
-          flags.stringFlags.templateLitExpIndex++;
-          break;
-        } else if (char === "}" && !u.isEscaped(i, str)) {
-          flags.stringFlags.templateLitExpIndex = -1;
-          break;
-        } else {
-          flags.stringFlags.templateLitExpIndex++;
-          break;
-        }
       case /(?=[\w$])(?=[^\d])/.test(char): // word character or _ or $ but not digit
         wordStack.push(char);
         break;
@@ -189,11 +172,10 @@ TODOS:
         if (char === ".") flags.numberFlags.haveSeenPeriod = true;
         break;
       case /['"]/.test(char): // starts a string
-        // if (char === "`") flags.stringFlags.templateLiteral = true;
         stringStack.push(char);
         break;
       case /[`]/.test(char):
-        segments.push(...handleTemplateLiteral(char, i, data, flags, str));
+        const templateLiteralSegments = handleTemplateLiteral(i, str);
         break;
       default:
         segments.push(char); // starts no stack
@@ -201,9 +183,47 @@ TODOS:
     }
   };
 
-  // function push(stack, char, data, flags) {
-  //   stack.push(char)
-  // }
+  const handleTemplateLiteral = (i, str) => {
+    const templateLiteralStacks = [["`"]];
+    let templateSegment = 0;
+    let templateExpressionFlag = false;
+    const templateExpression = [];
+    for (let j = i + 1; j < str.length; j++) {
+      switch (true) {
+        case templateExpressionFlag:
+          templateExpression.push(str[j]);
+          if (str[j] === "}" && !u.isEscaped(j, str)) {
+            templateLiteralStacks.push(
+              ...split(templateExpression.slice(1, -1).join(""))
+            );
+            templateExpressionFlag = false;
+            templateExpression.length = 0;
+            templateSegment = templateLiteralStacks.length;
+            templateLiteralStacks.push([]);
+          } else if (str[j] === "`" && !u.isEscaped(j, str)) {
+            throw new Error("Cannot parse nested template literals");
+          }
+          break;
+        case str[j] === "$" && !u.isEscaped(j, str):
+          if (j + 1 < str.length && str[j + 1] === "{") {
+            templateExpressionFlag = true;
+            templateLiteralStacks[templateSegment] = templateLiteralStacks[
+              templateSegment
+            ].join("");
+          }
+          break;
+        case str[j] === "`" && !u.isEscaped(j, str):
+          templateLiteralStacks[templateSegment].push(str[j]);
+          templateLiteralStacks[templateSegment] = templateLiteralStacks[
+            templateSegment
+          ].join("");
+          return templateLiteralStacks;
+        default:
+          templateLiteralStacks[templateSegment].push(str[j]);
+          break;
+      }
+    }
+  };
 
-  module.exports = split;
+  module.exports = { split, handleTemplateLiteral };
 })();
