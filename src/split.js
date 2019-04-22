@@ -43,6 +43,9 @@ TODOS:
     if (data.numberStack.length > 0) {
       data.segments.push(data.numberStack.join(""));
     }
+    if (data.stringStack.length > 0) {
+      throw new Error("Missing closing quote");
+    }
     // console.log(str, data.segments);
     return data.segments;
   };

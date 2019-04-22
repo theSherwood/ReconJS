@@ -114,5 +114,23 @@ describe("split", function() {
         " "
       ]);
     });
+
+    it("handles a string at the end", () => {
+      expect(split("let x = 'Hello'")).toEqual([
+        "let",
+        " ",
+        "x",
+        " ",
+        "=",
+        " ",
+        "'Hello'"
+      ]);
+    });
+
+    it("throws an error if there isn't a matching end ' ", () => {
+      expect(() => split("let x = 'Hello")).toThrow(
+        new Error("Missing closing quote")
+      );
+    });
   });
 });
