@@ -34,6 +34,7 @@ describe("vetting", () => {
       );
     });
   });
+
   describe("vetAdditional", () => {
     let whitelist;
 
@@ -62,6 +63,22 @@ describe("vetting", () => {
           "vetAdditional only accepts a string or an array of strings as an argument"
         )
       );
+    });
+  });
+
+  describe("checkAgainsVetted", () => {
+    let whitelist;
+
+    beforeEach(() => {
+      whitelist = vetting.getDefaultVetted();
+    });
+    it("returns an object containing two arrays of passing and failing words", () => {
+      const { passing, failing } = vetting.checkAgainstVetted(
+        ["let", "let", "const", "harvey"],
+        whitelist
+      );
+      expect(passing).toEqual(["let", "let", "const"]);
+      expect(failing).toEqual(["harvey"]);
     });
   });
 });

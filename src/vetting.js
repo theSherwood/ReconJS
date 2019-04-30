@@ -123,6 +123,19 @@
           "vetAdditional only accepts a string or an array of strings as an argument"
         );
       }
+    },
+    checkAgainstVetted: (wordsToCheck, vettedWords) => {
+      // WordsToCheck should be an array and vettedWords an object
+      const passing = [];
+      const failing = [];
+      wordsToCheck.forEach(word => {
+        if (vettedWords[word] === 1) {
+          passing.push(word);
+        } else {
+          failing.push(word);
+        }
+      });
+      return { passing, failing };
     }
   };
 
