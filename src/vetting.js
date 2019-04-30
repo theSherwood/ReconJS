@@ -107,7 +107,20 @@
         delete vettedHash[arg];
       } else {
         throw new Error(
-          "Unvet only accepts a string or an array of strings as an argument"
+          "unvet only accepts a string or an array of strings as an argument"
+        );
+      }
+    },
+    vetAdditional: (arg, vettedHash) => {
+      if (Array.isArray(arg)) {
+        arg.forEach(word => {
+          vettedHash[word] = 1;
+        });
+      } else if (typeof arg === "string") {
+        vettedHash[arg] = 1;
+      } else {
+        throw new Error(
+          "vetAdditional only accepts a string or an array of strings as an argument"
         );
       }
     }
