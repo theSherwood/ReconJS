@@ -1,7 +1,7 @@
 "use strict";
 
 (function() {
-  const vettedList = [
+  const whitelistArray = [
     "do",
     "if",
     "in",
@@ -92,32 +92,32 @@
 
   const vetMethods = {
     getDefaultVetted: () => {
-      const vettedHash = {};
-      vettedList.forEach(word => {
-        vettedHash[word] = 1;
+      const whitelist = {};
+      whitelistArray.forEach(word => {
+        whitelist[word] = 1;
       });
-      return vettedHash;
+      return whitelist;
     },
-    unvet: (arg, vettedHash) => {
+    unvet: (arg, whitelist) => {
       if (Array.isArray(arg)) {
         arg.forEach(word => {
-          delete vettedHash[word];
+          delete whitelist[word];
         });
       } else if (typeof arg === "string") {
-        delete vettedHash[arg];
+        delete whitelist[arg];
       } else {
         throw new Error(
           "unvet only accepts a string or an array of strings as an argument"
         );
       }
     },
-    vetAdditional: (arg, vettedHash) => {
+    vetAdditional: (arg, whitelist) => {
       if (Array.isArray(arg)) {
         arg.forEach(word => {
-          vettedHash[word] = 1;
+          whitelist[word] = 1;
         });
       } else if (typeof arg === "string") {
-        vettedHash[arg] = 1;
+        whitelist[arg] = 1;
       } else {
         throw new Error(
           "vetAdditional only accepts a string or an array of strings as an argument"
@@ -126,5 +126,5 @@
     }
   };
 
-  module.exports = { vetMethods };
+  module.exports = vetMethods;
 })();
