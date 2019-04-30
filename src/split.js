@@ -15,6 +15,7 @@ TODOS:
 
   function split(str) {
     const segments = [];
+    const labels = [];
 
     // Segments in progress
     const wordStack = [];
@@ -57,16 +58,26 @@ TODOS:
         case /['"]/.test(char):
           // if (char === "`") flags.stringFlags.templateLiteral = true;
           segments.push(wordStack.join(""));
+          labels.push("w");
           wordStack.length = 0;
           stringStack.push(char);
           break;
         case /[`]/.test(char):
           segments.push(wordStack.join(""));
+          labels.push("w");
           wordStack.length = 0;
-          segments.push(...handleTemplateLiteral(str)[1]);
+          const [
+            j,
+            templateLiteralSegments,
+            templateLabels
+          ] = handleTemplateLiteral(i, str);
+          segments.push(...templateLiteralSegments);
+          labels.push(...templateLabels);
+          i = j;
           break;
         default:
           segments.push(wordStack.join(""));
+          labels.push("w");
           wordStack.length = 0;
           primarySwitch(char);
           break;
@@ -82,6 +93,7 @@ TODOS:
           if (flags.numberFlags.haveSeenPeriod) {
             // there's already a period
             segments.push(numberStack.join(""));
+            labels.push("n");
             numberStack.length = 0;
           }
           numberStack.push(char);
@@ -89,24 +101,32 @@ TODOS:
           break;
         case /[\w$]/.test(char):
           segments.push(numberStack.join(""));
+          labels.push("n");
           numberStack.length = 0;
           wordStack.push(char);
           break;
         case /['"]/.test(char):
-          // if (char === "`") flags.stringFlags.templateLiteral = true;
           segments.push(numberStack.join(""));
+          labels.push("n");
           numberStack.length = 0;
           stringStack.push(char);
           break;
         case /[`]/.test(char):
           segments.push(numberStack.join(""));
+          labels.push("n");
           numberStack.length = 0;
-          const [j, templateLiteralSegments] = handleTemplateLiteral(i, str);
+          const [
+            j,
+            templateLiteralSegments,
+            templateLabels
+          ] = handleTemplateLiteral(i, str);
           segments.push(...templateLiteralSegments);
+          labels.push(...templateLabels);
           i = j;
           break;
         default:
           segments.push(numberStack.join(""));
+          labels.push("n");
           numberStack.length = 0;
           primarySwitch(char);
           break;
@@ -120,6 +140,7 @@ TODOS:
           if (!u.isEscaped(i, str)) {
             // quote char has not been escaped
             segments.push(stringStack.join(""));
+            labels.push("s");
             stringStack.length = 0;
             flags.stringFlags.templateLiteral = false;
           }
@@ -130,6 +151,7 @@ TODOS:
           } else if (str[i + 1] === "{") {
             flags.stringFlags.templateLitExpIndex = 0;
             segments.push(stringStack.join(""));
+            labels.push("s");
             stringStack.length = 0;
           } else {
             stringStack.push(char);
@@ -140,6 +162,7 @@ TODOS:
           flags.stringFlags.templateLiteral:
           stringStack.push(char);
           segments.push(stringStack.join(""));
+          labels.push("s");
           stringStack.length = 0;
           flags.stringFlags.templateLiteral = false;
           break;
@@ -162,12 +185,18 @@ TODOS:
           stringStack.push(char);
           break;
         case /[`]/.test(char):
-          const [j, templateLiteralSegments] = handleTemplateLiteral(i, str);
+          const [
+            j,
+            templateLiteralSegments,
+            templateLabels
+          ] = handleTemplateLiteral(i, str);
           segments.push(...templateLiteralSegments);
+          labels.push(...templateLabels);
           i = j;
           break;
         default:
           segments.push(char); // starts no stack
+          labels.push(" ");
           break;
       }
     };
@@ -179,30 +208,37 @@ TODOS:
 
     if (wordStack.length > 0) {
       segments.push(wordStack.join(""));
+      labels.push("w");
     }
     if (numberStack.length > 0) {
       segments.push(numberStack.join(""));
+      labels.push("n");
     }
     if (stringStack.length > 0) {
       throw new Error("Missing closing quote");
     }
     // console.log(str,  segments);
-    return segments;
+    return [segments, labels];
   }
 
   const handleTemplateLiteral = (i, str) => {
     const templateLiteralStacks = [["`"]];
+    const templateLabels = [];
     let templateSegment = 0;
     let templateExpressionFlag = false;
     const templateExpression = [];
     for (let j = i + 1; j < str.length; j++) {
       switch (true) {
+        case j === str.length - 1 && str[j] !== "`":
+          throw new Error("Missing closing ` ");
         case templateExpressionFlag:
           templateExpression.push(str[j]);
           if (str[j] === "}" && !u.isEscaped(j, str)) {
-            templateLiteralStacks.push(
-              ...split(templateExpression.slice(1, -1).join(""))
+            const [tSegments, tLabels] = split(
+              templateExpression.slice(1, -1).join("")
             );
+            templateLiteralStacks.push(...tSegments);
+            templateLabels.push(...tLabels);
             templateExpressionFlag = false;
             templateExpression.length = 0;
             templateSegment = templateLiteralStacks.length;
@@ -217,6 +253,9 @@ TODOS:
             templateLiteralStacks[templateSegment] = templateLiteralStacks[
               templateSegment
             ].join("");
+            templateLabels.push("t"); // template expression start
+          } else {
+            templateLiteralStacks[templateSegment].push(str[j]);
           }
           break;
         case str[j] === "`" && !u.isEscaped(j, str):
@@ -224,11 +263,8 @@ TODOS:
           templateLiteralStacks[templateSegment] = templateLiteralStacks[
             templateSegment
           ].join("");
-          return [j, templateLiteralStacks];
-        case j === str.length - 1:
-          if (str[j] !== "`") {
-            throw new Error("Missing closing ` ");
-          }
+          templateLabels.push("t");
+          return [j, templateLiteralStacks, templateLabels];
         default:
           templateLiteralStacks[templateSegment].push(str[j]);
           break;
