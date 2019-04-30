@@ -207,4 +207,36 @@ describe("split", function() {
     //   ]);
     // });
   });
+
+  describe("labels", () => {
+    it("returns an array of labels for the segments array", () => {
+      expect(
+        split("let a = `hello ${x + y} and ${z}` + 127.45 + 'string'")[1]
+      ).toEqual([
+        "w",
+        " ",
+        "w",
+        " ",
+        " ",
+        " ",
+        "t",
+        "w",
+        " ",
+        " ",
+        " ",
+        "w",
+        "t",
+        "w",
+        "t",
+        " ",
+        " ",
+        " ",
+        "n",
+        " ",
+        " ",
+        " ",
+        "s"
+      ]);
+    });
+  });
 });
