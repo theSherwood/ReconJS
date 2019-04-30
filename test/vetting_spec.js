@@ -25,5 +25,13 @@ describe("vetMethods", () => {
       expect(vettedHash["let"]).toEqual(undefined);
       expect(vettedHash["const"]).toEqual(undefined);
     });
+
+    it("throws an error if something other than a string or array is passed as the first argument", () => {
+      expect(() => vetMethods.unvet({ let: "let" }, vettedHash)).toThrow(
+        new Error(
+          "Unvet only accepts a string or an array of strings as an argument"
+        )
+      );
+    });
   });
 });
