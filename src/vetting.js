@@ -124,18 +124,42 @@
         );
       }
     },
-    checkAgainstVetted: (wordsToCheck, vettedWords) => {
-      // WordsToCheck should be an array and vettedWords an object
-      const passing = [];
-      const failing = [];
-      wordsToCheck.forEach(word => {
-        if (vettedWords[word] === 1) {
-          passing.push(word);
-        } else {
-          failing.push(word);
+    checkWords: (segments, labels, whitelist, vettedVariables) => {
+      const passing = {};
+      const failing = {};
+      segments.forEach((segment, i) => {
+        if (labels[i] === "w") {
+          if (whitelist.hasOwnProperty(segment)) {
+            passing[segment] = 1;
+          } else if (
+            vettedVariables &&
+            vettedVariables.hasOwnProperty(segment)
+          ) {
+            passing[segment] = 1;
+          } else if (i > 0 && segments[i - 1] === ".") {
+            passing[segment] = 1;
+          } else if (
+            i > 1 &&
+            segments[i - 1] === " " &&
+            ["let", "const", "var", "function"].includes(segments[i - 2])
+          ) {
+            passing[segment] = 1;
+          } else if (passing.hasOwnProperty(segment)) {
+            // do nothing
+          } else {
+            failing[segment] = 1;
+          }
         }
       });
-      return { passing, failing };
+      const failures = Object.keys(failing);
+      if (failures.length > 0) {
+        throw new Error(
+          "The words * " +
+            failures.join(", ") +
+            " * are not permitted to be used, unless declared as variables"
+        );
+      }
+      return passing;
     }
   };
 
