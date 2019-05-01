@@ -30,5 +30,15 @@ describe("SanitizeJS", function() {
         "SanitizeJS: The words * window * are not permitted to be used, unless declared as variables"
       );
     });
+
+    it("handles multi-line strings with semicolons", () => {
+      expect(
+        sjs.run(`
+      let x = 2;
+      let y = 137;
+      y * x;
+      `)
+      ).toEqual(274);
+    });
   });
 });

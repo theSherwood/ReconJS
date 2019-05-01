@@ -34,8 +34,10 @@ Run code in a sandbox with only the specified context variables in scope
       let result;
       try {
         const [segments, labels] = split(jsString);
+        // console.log("post-split", segments, labels);
         vetting.checkWords(segments, labels, this.whitelist, allowedVariables);
       } catch (err) {
+        // console.log("err at first block!");
         return err.message;
       }
       try {
@@ -47,10 +49,19 @@ Run code in a sandbox with only the specified context variables in scope
         Object.entries(allowedVariables).forEach(entry =>
           variables.push(entry[0] + "=" + entry[1])
         );
-        // Pass those variables and values as arguments so that jsString will be executed in the scope of those variables
-        result = new Function(...variables, `return (${jsString})`)();
+        /*
+        Pass those variables and values as arguments so that jsString will be executed
+        in the scope of those variables.
+        The Function constructor is needed to create a scope with the allowedVariables.
+        The eval and the template literal ` are there for handling multi-line strings.
+        */
+        result = new Function(
+          ...variables,
+          "return (eval(`" + jsString + "`))"
+        )();
         // result = eval(jsString);
       } catch (err) {
+        // console.log("err at second block!");
         return err.message;
       }
       return result;
