@@ -107,7 +107,7 @@
         delete whitelist[arg];
       } else {
         throw new Error(
-          "removeFromWhitelist only accepts a string or an array of strings as an argument"
+          "SanitizeJS: removeFromWhitelist only accepts a string or an array of strings as an argument"
         );
       }
     },
@@ -120,7 +120,7 @@
         whitelist[arg] = 1;
       } else {
         throw new Error(
-          "addToWhitelist only accepts a string or an array of strings as an argument"
+          "SanitizeJS: addToWhitelist only accepts a string or an array of strings as an argument"
         );
       }
     },
@@ -154,7 +154,7 @@
       const failures = Object.keys(failing);
       if (failures.length > 0) {
         throw new Error(
-          "The words * " +
+          "SanitizeJS: The words * " +
             failures.join(", ") +
             " * are not permitted to be used, unless declared as variables"
         );

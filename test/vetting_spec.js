@@ -31,7 +31,7 @@ describe("vetting", () => {
         vetting.removeFromWhitelist({ let: "let" }, whitelist)
       ).toThrow(
         new Error(
-          "removeFromWhitelist only accepts a string or an array of strings as an argument"
+          "SanitizeJS: removeFromWhitelist only accepts a string or an array of strings as an argument"
         )
       );
     });
@@ -62,7 +62,7 @@ describe("vetting", () => {
     it("throws an error if something other than a string or array is passed as the first argument", () => {
       expect(() => vetting.addToWhitelist({ nonD: "nonD" }, whitelist)).toThrow(
         new Error(
-          "addToWhitelist only accepts a string or an array of strings as an argument"
+          "SanitizeJS: addToWhitelist only accepts a string or an array of strings as an argument"
         )
       );
     });
@@ -125,7 +125,7 @@ describe("vetting", () => {
 
       expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
         new Error(
-          "The words * harvey * are not permitted to be used, unless declared as variables"
+          "SanitizeJS: The words * harvey * are not permitted to be used, unless declared as variables"
         )
       );
     });

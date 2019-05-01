@@ -222,7 +222,7 @@ TODOS:
       labels.push("n");
     }
     if (stringStack.length > 0) {
-      throw new Error("Missing closing quote");
+      throw new Error("SanitizeJS: Missing closing quote");
     }
     // console.log(str, segments);
     return [segments, labels];
@@ -237,7 +237,7 @@ TODOS:
     for (let j = i + 1; j < str.length; j++) {
       switch (true) {
         case j === str.length - 1 && str[j] !== "`":
-          throw new Error("Missing closing ` ");
+          throw new Error("SanitizeJS: Missing closing ` ");
         case templateExpressionFlag:
           templateExpression.push(str[j]);
           if (str[j] === "}" && !u.isEscaped(j, str)) {
@@ -251,7 +251,9 @@ TODOS:
             templateSegment = templateLiteralStacks.length;
             templateLiteralStacks.push([]);
           } else if (str[j] === "`" && !u.isEscaped(j, str)) {
-            throw new Error("Cannot parse nested template literals");
+            throw new Error(
+              "SanitizeJS: Cannot parse nested template literals"
+            );
           }
           break;
         case str[j] === "$" && !u.isEscaped(j, str):

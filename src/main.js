@@ -36,7 +36,7 @@ Run code in a sandbox with only the specified context variables in scope
         const [segments, labels] = split(jsString);
         vetting.checkWords(segments, labels, this.whitelist, allowedVariables);
       } catch (err) {
-        return err;
+        return err.message;
       }
       try {
         if (!allowedVariables) {
@@ -51,7 +51,7 @@ Run code in a sandbox with only the specified context variables in scope
         result = new Function(...variables, `return (${jsString})`)();
         // result = eval(jsString);
       } catch (err) {
-        return err;
+        return err.message;
       }
       return result;
     }

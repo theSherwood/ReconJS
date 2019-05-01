@@ -129,19 +129,19 @@ describe("split", function() {
 
     it("throws an error if there isn't a matching end ' ", () => {
       expect(() => split("let x = 'Hello")).toThrow(
-        new Error("Missing closing quote")
+        new Error("SanitizeJS: Missing closing quote")
       );
     });
 
     it("throws an error if there isn't a matching end '\"' ", () => {
       expect(() => split('let x = "Hello')).toThrow(
-        new Error("Missing closing quote")
+        new Error("SanitizeJS: Missing closing quote")
       );
     });
 
     it("throws an error if there isn't a matching end ' \" ' (single quotes on the outside)", () => {
       expect(() => split('let x = "Hello')).toThrow(
-        new Error("Missing closing quote")
+        new Error("SanitizeJS: Missing closing quote")
       );
     });
   });
