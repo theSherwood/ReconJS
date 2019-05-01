@@ -1,14 +1,15 @@
-// "use strict";
+"use strict";
 
-// const Main = require("../src/main");
+const SanitizeJS = require("../src/main");
 
-// describe("Main", function() {
-//   it("can be constructed and used as an object", function() {
-//     var main = new Main();
-//     main.aProperty = 1;
+describe("SanitizeJS", function() {
+  it("can be constructed and used as an object", function() {
+    const s = new SanitizeJS();
+    s.aProperty = 1;
 
-//     expect(main.aProperty).toBe(1);
-//   });
+    expect(s.aProperty).toBe(1);
+  });
+});
 
 //   describe("$split", function() {
 //     var main;
