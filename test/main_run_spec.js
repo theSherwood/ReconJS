@@ -40,5 +40,15 @@ describe("SanitizeJS", function() {
       `)
       ).toEqual(274);
     });
+
+    it("handles multi-line strings without semicolons", () => {
+      expect(
+        sjs.run(`
+      let x = 2
+      let y = 137
+      y * x
+      `)
+      ).toEqual(274);
+    });
   });
 });
