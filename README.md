@@ -1,2 +1,2 @@
-# JSLite
+# SanitizeJS
 statically sanitize javascript
