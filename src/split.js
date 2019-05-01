@@ -13,7 +13,8 @@ TODOS:
 (function() {
   const u = require("./utils");
 
-  function split(str) {
+  function split(javascriptStr) {
+    const str = javascriptStr;
     const segments = [];
     const labels = [];
 
@@ -194,6 +195,10 @@ TODOS:
           labels.push(...templateLabels);
           i = j;
           break;
+        // case char === " " && i < str.length && str[i + 1] === " ":
+        //   // skip consecutive blankspace
+        //   i++;
+        //   break;
         default:
           segments.push(char); // starts no stack
           labels.push(" ");
@@ -217,7 +222,7 @@ TODOS:
     if (stringStack.length > 0) {
       throw new Error("Missing closing quote");
     }
-    // console.log(str,  segments);
+    console.log(str, segments);
     return [segments, labels];
   }
 

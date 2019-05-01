@@ -239,4 +239,42 @@ describe("split", function() {
       ]);
     });
   });
+
+  /* The following may be entirely unnecessary */
+  // describe("multiline-string", () => {
+  //   it("handles a multi-line string input with correct semicolons", () => {
+  //     expect(
+  //       split(`
+  //       let x = 5;
+  //       let y = 6;
+  //       x + y;
+  //     `)[0]
+  //     ).toEqual([
+  //       "let",
+  //       " ",
+  //       "x",
+  //       " ",
+  //       "=",
+  //       " ",
+  //       "5",
+  //       ";",
+  //       " ",
+  //       "let",
+  //       " ",
+  //       "y",
+  //       " ",
+  //       "=",
+  //       " ",
+  //       "6",
+  //       ";",
+  //       " ",
+  //       "x",
+  //       " ",
+  //       "+",
+  //       " ",
+  //       "y",
+  //       ";"
+  //     ]);
+  //   });
+  // });
 });
