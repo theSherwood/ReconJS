@@ -49,6 +49,50 @@ describe("SanitizeJS", function() {
       expect(Object.keys(s.whitelist).length).toBe(0);
     });
   });
+  describe("addToWhitelist", () => {
+    let s;
+    beforeEach(() => {
+      s = new SanitizeJS();
+    });
+
+    it("adds a word to the default whitelist", () => {
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["foo"]).toEqual(undefined);
+      s.addToWhitelist("foo");
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["foo"]).toBe(1);
+    });
+
+    it("adds words to the default whitelist", () => {
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["goofeth"]).toEqual(undefined);
+      expect(s.whitelist["foo"]).toEqual(undefined);
+      expect(s.whitelist["bar"]).toEqual(undefined);
+      s.addToWhitelist(["do", "foo", "bar", "goofeth"]);
+      expect(s.whitelist["foo"]).toBe(1);
+      expect(s.whitelist["bar"]).toBe(1);
+      expect(s.whitelist["goofeth"]).toBe(1);
+      expect(s.whitelist["do"]).toBe(1);
+    });
+  });
+  describe("resetWhitelist", () => {
+    let s;
+    beforeEach(() => {
+      s = new SanitizeJS();
+    });
+
+    it("resets whitelist to default", () => {
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["foo"]).toEqual(undefined);
+      s.addToWhitelist("foo");
+      s.removeFromWhitelist("do");
+      expect(s.whitelist["do"]).toEqual(undefined);
+      expect(s.whitelist["foo"]).toBe(1);
+      s.resetWhitelist();
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["foo"]).toEqual(undefined);
+    });
+  });
 });
 
 //   describe("$split", function() {
