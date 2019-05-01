@@ -1,7 +1,7 @@
 "use strict";
 
 (function() {
-  const split = require("./split");
+  const { split } = require("./split");
   const vetting = require("./vetting");
 
   class SanitizeJS {
@@ -24,8 +24,8 @@
     run(jsString, allowedVariables) {
       let result;
       try {
-        const { segments, labels } = split(jsString);
-        checkWords(segments, labels, this.whitelist, allowedVariables);
+        const [segments, labels] = split(jsString);
+        vetting.checkWords(segments, labels, this.whitelist, allowedVariables);
       } catch (err) {
         return err;
       }

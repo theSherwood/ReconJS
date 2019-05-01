@@ -90,7 +90,7 @@
     "AsyncFunction"
   ];
 
-  const vetMethods = {
+  const vetting = {
     getWhitelistObject: () => {
       const whitelist = {};
       whitelistArray.forEach(word => {
@@ -163,5 +163,5 @@
     }
   };
 
-  module.exports = vetMethods;
+  module.exports = vetting;
 })();

@@ -8,6 +8,8 @@ This needs to be more dynamic. Function calls rather than switch cases.
 TODOS:
 
 * Make a push function that looks for flags before it pushes and can more easily redirect to other places on the decision tree
+* Ignore comments, both single- and multi-line
+
 */
 
 (function() {
