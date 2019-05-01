@@ -74,6 +74,7 @@ describe("vetting", () => {
     beforeEach(() => {
       whitelist = vetting.getWhitelistObject();
     });
+
     it("returns an object containing passing words checked against a whitelist", () => {
       const segments = ["let", " ", "const", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
@@ -84,6 +85,7 @@ describe("vetting", () => {
       expect(passing["="]).toBe(undefined);
       expect(passing["2"]).toBe(undefined);
     });
+
     it("passes declared variables/function names as well", () => {
       const segments = ["let", " ", "x", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
@@ -94,6 +96,7 @@ describe("vetting", () => {
       expect(passing["="]).toBe(undefined);
       expect(passing["2"]).toBe(undefined);
     });
+
     it("passes words contained in an object of allowed variables", () => {
       const segments = ["foo", " ", "bar", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
@@ -107,6 +110,7 @@ describe("vetting", () => {
       expect(passing["="]).toBe(undefined);
       expect(passing["2"]).toBe(undefined);
     });
+
     it("passes words used as a property, immediately after a dot operator", () => {
       const segments = ["foo", ".", "bar", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
@@ -119,6 +123,50 @@ describe("vetting", () => {
       expect(passing["="]).toBe(undefined);
       expect(passing["2"]).toBe(undefined);
     });
+
+    it("allows words declared as variable identifiers or function names", () => {
+      const segments = [
+        "let",
+        " ",
+        "foo",
+        " ",
+        "const",
+        " ",
+        "bar",
+        " ",
+        "var",
+        " ",
+        "word",
+        " ",
+        "function",
+        " ",
+        "nameOfFunction"
+      ];
+      const labels = [
+        "w",
+        " ",
+        "w",
+        " ",
+        "w",
+        " ",
+        "w",
+        " ",
+        "w",
+        " ",
+        "w",
+        " ",
+        "w",
+        " ",
+        "w"
+      ];
+
+      const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["foo"]).toBe(1);
+      expect(passing["bar"]).toBe(1);
+      expect(passing["word"]).toBe(1);
+      expect(passing["nameOfFunction"]).toBe(1);
+    });
+
     it("throws an error if an undeclared word is used that isn't on the whitelist or allowedVariables object or used as a property", () => {
       const segments = ["let", "const", "harvey"];
       const labels = ["w", "w", "w"];
