@@ -3,16 +3,16 @@
 const vetting = require("../src/vetting");
 
 describe("vetting", () => {
-  describe("unvet", () => {
+  describe("removeFromWhitelist", () => {
     let whitelist;
 
     beforeEach(() => {
-      whitelist = vetting.getDefaultVetted();
+      whitelist = vetting.getWhitelistObject();
     });
 
     it("allows removing a string from the whitelist object", () => {
       expect(whitelist["do"]).toBe(1);
-      vetting.unvet("do", whitelist);
+      vetting.removeFromWhitelist("do", whitelist);
       expect(whitelist["do"]).toEqual(undefined);
     });
 
@@ -20,30 +20,32 @@ describe("vetting", () => {
       expect(whitelist["do"]).toBe(1);
       expect(whitelist["let"]).toBe(1);
       expect(whitelist["const"]).toBe(1);
-      vetting.unvet(["do", "let", "const"], whitelist);
+      vetting.removeFromWhitelist(["do", "let", "const"], whitelist);
       expect(whitelist["do"]).toEqual(undefined);
       expect(whitelist["let"]).toEqual(undefined);
       expect(whitelist["const"]).toEqual(undefined);
     });
 
     it("throws an error if something other than a string or array is passed as the first argument", () => {
-      expect(() => vetting.unvet({ let: "let" }, whitelist)).toThrow(
+      expect(() =>
+        vetting.removeFromWhitelist({ let: "let" }, whitelist)
+      ).toThrow(
         new Error(
-          "unvet only accepts a string or an array of strings as an argument"
+          "removeFromWhitelist only accepts a string or an array of strings as an argument"
         )
       );
     });
   });
 
-  describe("vetAdditional", () => {
+  describe("addToWhitelist", () => {
     let whitelist;
 
     beforeEach(() => {
-      whitelist = vetting.getDefaultVetted();
+      whitelist = vetting.getWhitelistObject();
     });
     it("allows adding a string to the whitelist object", () => {
       expect(whitelist["nonDefault"]).toEqual(undefined);
-      vetting.vetAdditional("nonDefault", whitelist);
+      vetting.addToWhitelist("nonDefault", whitelist);
       expect(whitelist["nonDefault"]).toEqual(1);
     });
 
@@ -51,16 +53,16 @@ describe("vetting", () => {
       expect(whitelist["nonD1"]).toBe(undefined);
       expect(whitelist["nonD2"]).toBe(undefined);
       expect(whitelist["nonD3"]).toBe(undefined);
-      vetting.vetAdditional(["nonD1", "nonD2", "nonD3"], whitelist);
+      vetting.addToWhitelist(["nonD1", "nonD2", "nonD3"], whitelist);
       expect(whitelist["nonD1"]).toEqual(1);
       expect(whitelist["nonD2"]).toEqual(1);
       expect(whitelist["nonD3"]).toEqual(1);
     });
 
     it("throws an error if something other than a string or array is passed as the first argument", () => {
-      expect(() => vetting.vetAdditional({ nonD: "nonD" }, whitelist)).toThrow(
+      expect(() => vetting.addToWhitelist({ nonD: "nonD" }, whitelist)).toThrow(
         new Error(
-          "vetAdditional only accepts a string or an array of strings as an argument"
+          "addToWhitelist only accepts a string or an array of strings as an argument"
         )
       );
     });
@@ -70,7 +72,7 @@ describe("vetting", () => {
     let whitelist;
 
     beforeEach(() => {
-      whitelist = vetting.getDefaultVetted();
+      whitelist = vetting.getWhitelistObject();
     });
     it("returns an object containing passing words checked against a whitelist", () => {
       const segments = ["let", " ", "const", " ", "=", " ", "2"];

@@ -91,14 +91,14 @@
   ];
 
   const vetMethods = {
-    getDefaultVetted: () => {
+    getWhitelistObject: () => {
       const whitelist = {};
       whitelistArray.forEach(word => {
         whitelist[word] = 1;
       });
       return whitelist;
     },
-    unvet: (arg, whitelist) => {
+    removeFromWhitelist: (arg, whitelist) => {
       if (Array.isArray(arg)) {
         arg.forEach(word => {
           delete whitelist[word];
@@ -107,11 +107,11 @@
         delete whitelist[arg];
       } else {
         throw new Error(
-          "unvet only accepts a string or an array of strings as an argument"
+          "removeFromWhitelist only accepts a string or an array of strings as an argument"
         );
       }
     },
-    vetAdditional: (arg, whitelist) => {
+    addToWhitelist: (arg, whitelist) => {
       if (Array.isArray(arg)) {
         arg.forEach(word => {
           whitelist[word] = 1;
@@ -120,7 +120,7 @@
         whitelist[arg] = 1;
       } else {
         throw new Error(
-          "vetAdditional only accepts a string or an array of strings as an argument"
+          "addToWhitelist only accepts a string or an array of strings as an argument"
         );
       }
     },
