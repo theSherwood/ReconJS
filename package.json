@@ -4,7 +4,8 @@
   "description": "statically sanitize javascript",
   "main": "index.js",
   "scripts": {
-    "test": "karma start"
+    "test": "karma start",
+    "run": "karma start karma.main_run.conf.js"
   },
   "author": "Adam Sherwood",
   "license": "MIT",
