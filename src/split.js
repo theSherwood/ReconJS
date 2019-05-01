@@ -222,7 +222,7 @@ TODOS:
     if (stringStack.length > 0) {
       throw new Error("Missing closing quote");
     }
-    console.log(str, segments);
+    // console.log(str, segments);
     return [segments, labels];
   }
 

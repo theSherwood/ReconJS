@@ -9,6 +9,46 @@ describe("SanitizeJS", function() {
 
     expect(s.aProperty).toBe(1);
   });
+
+  describe("removeFromWhitelist", () => {
+    let s;
+    beforeEach(() => {
+      s = new SanitizeJS();
+    });
+
+    it("removes a word from the default whitelist", () => {
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["let"]).toBe(1);
+      s.removeFromWhitelist("do");
+      expect(s.whitelist["do"]).toEqual(undefined);
+      expect(s.whitelist["let"]).toBe(1);
+    });
+
+    it("removes words from the default whitelist", () => {
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["let"]).toBe(1);
+      expect(s.whitelist["const"]).toBe(1);
+      expect(s.whitelist["for"]).toBe(1);
+      s.removeFromWhitelist(["do", "let", "const"]);
+      expect(s.whitelist["do"]).toEqual(undefined);
+      expect(s.whitelist["let"]).toEqual(undefined);
+      expect(s.whitelist["const"]).toEqual(undefined);
+      expect(s.whitelist["for"]).toBe(1);
+    });
+
+    it("removes all words from the default whitelist if an array of the whitelist keys is passed in", () => {
+      expect(s.whitelist["do"]).toBe(1);
+      expect(s.whitelist["let"]).toBe(1);
+      expect(s.whitelist["const"]).toBe(1);
+      expect(s.whitelist["for"]).toBe(1);
+      s.removeFromWhitelist(Object.keys(s.whitelist));
+      expect(s.whitelist["do"]).toEqual(undefined);
+      expect(s.whitelist["let"]).toEqual(undefined);
+      expect(s.whitelist["const"]).toEqual(undefined);
+      expect(s.whitelist["for"]).toEqual(undefined);
+      expect(Object.keys(s.whitelist).length).toBe(0);
+    });
+  });
 });
 
 //   describe("$split", function() {
