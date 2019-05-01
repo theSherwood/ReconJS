@@ -1,2 +1,3 @@
 # SanitizeJS
+
 statically sanitize javascript
