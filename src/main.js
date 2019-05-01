@@ -1,5 +1,14 @@
 "use strict";
 
+/*
+Run code in a sandbox with only the specified context variables in scope
+*/
+// $tw.utils.evalSandboxed = $tw.browser ? $tw.utils.evalGlobal : function(code,context,filename) {
+// 	var sandbox = $tw.utils.extend(Object.create(null),context);
+// 	vm.runInNewContext(code,sandbox,filename);
+// 	return sandbox.exports;
+// };
+
 (function() {
   const { split } = require("./split");
   const vetting = require("./vetting");
@@ -30,8 +39,17 @@
         return err;
       }
       try {
-        result = eval(jsString);
-        // const result = new Function(jsString)(); // This requires a return statement
+        if (!allowedVariables) {
+          allowedVariables = {};
+        }
+        // Get variables and their values out of the allowedVariables object
+        const variables = [];
+        Object.entries(allowedVariables).forEach(entry =>
+          variables.push(entry[0] + "=" + entry[1])
+        );
+        // Pass those variables and values as arguments so that jsString will be executed in the scope of those variables
+        result = new Function(...variables, `return (${jsString})`)();
+        // result = eval(jsString);
       } catch (err) {
         return err;
       }
