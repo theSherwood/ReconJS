@@ -190,11 +190,50 @@ describe("vetting", () => {
       expect(passing["function"]).toBe(1);
     });
 
+    it("allows multiple parameters to be passed into a function declaration", () => {
+      const segments = [
+        "function",
+        " ",
+        "foo",
+        " ",
+        "(",
+        "bar",
+        ",",
+        " ",
+        "fulano",
+        ")"
+      ];
+      const labels = ["w", " ", "w", " ", " ", "w", " ", " ", "w", " "];
+
+      const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["foo"]).toBe(1);
+      expect(passing["bar"]).toBe(1);
+      expect(passing["fulano"]).toBe(1);
+      expect(passing["function"]).toBe(1);
+    });
+
     it("allows a single parameter passed into an arrow function declaration with parentheses", () => {
       const segments = ["(", "bar", ")", " ", "=", ">"];
       const labels = [" ", "w", " ", " ", " ", " "];
 
       const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["bar"]).toBe(1);
+    });
+
+    it("allows a single parameter passed into an arrow function declaration without parentheses", () => {
+      const segments = [" ", "bar", " ", "=", ">"];
+      const labels = [" ", "w", " ", " ", " "];
+
+      const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["bar"]).toBe(1);
+    });
+
+    it("allows a single parameter passed into an arrow function declaration with parentheses", () => {
+      const segments = ["(", "foo", ",", " ", "bar", ")", " ", "=", ">"];
+      const labels = [" ", "w", " ", " ", "w", " ", " ", " ", " "];
+
+      const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["foo"]).toBe(1);
       expect(passing["bar"]).toBe(1);
     });
   });
