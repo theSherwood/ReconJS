@@ -129,9 +129,6 @@
 
     checkWords: (segments, labels, whitelist, vettedVariables) => {
       const parameters = getFunctionParameters(segments, labels);
-      if (Object.keys(parameters).length > 0) {
-        console.log(parameters);
-      }
 
       const passing = {};
       const failing = {};
@@ -152,7 +149,7 @@
             ["let", "const", "var", "function"].includes(segments[i - 2])
           ) {
             passing[segment] = 1;
-          } else if (isParameter(i, segments, labels)) {
+          } else if (parameterCheck(segments[i], i, parameters)) {
             passing[segment] = 1;
           } else if (passing.hasOwnProperty(segment)) {
             // do nothing
@@ -174,55 +171,17 @@
     }
   };
 
-  const isParameter = (i, segments, labels) => {
-    return (
-      isParameterOfTradFunc(i, segments, labels) ||
-      isParameterOfArrowFunc(i, segments, labels)
-    );
-  };
-
-  const isParameterOfTradFunc = (i, segments, labels) => {
-    let encounteredParenthesis = false;
-    for (let j = i - 1; j > -1; j--) {
-      switch (true) {
-        case labels[j] === "w":
-          if (encounteredParenthesis && segments[j] === "function") {
-            return true;
-          }
-          break;
-        case labels[j] === " " && segments[j] === "(":
-          if (!encounteredParenthesis) {
-            encounteredParenthesis = true;
-          } else {
-            return false;
-          }
-          break;
-        case labels[j] === " " && [" ", ","].includes(segments[j]):
-          break;
-        default:
-          return false;
-      }
+  const parameterCheck = (parameter, location, parameters) => {
+    // Check that the parameter is used only within the function declaration
+    let passesCheck = false;
+    if (parameters.hasOwnProperty(parameter)) {
+      parameters[parameter].forEach(range => {
+        if (location >= range[0] && location <= range[1]) {
+          passesCheck = true;
+        }
+      });
     }
-    return false;
-  };
-
-  const isParameterOfArrowFunc = (i, segments, labels) => {
-    for (let j = i + 1; j < segments.length; j++) {
-      switch (true) {
-        case labels[j] === "w":
-          break;
-        case labels[j] === " " && [")", " ", ","].includes(segments[j]):
-          break;
-        case j < segments.length - 1 &&
-          labels[j] === " " &&
-          segments[j] === "=" &&
-          segments[j + 1] === ">":
-          return true;
-        default:
-          return false;
-      }
-    }
-    return false;
+    return passesCheck;
   };
 
   const getFunctionParameters = (segments, labels) => {
