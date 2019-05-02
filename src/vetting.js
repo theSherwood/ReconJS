@@ -138,17 +138,17 @@
     checkWords: (segments, labels, whitelist, vettedVariables) => {
       const parameters = getFunctionParameters(segments, labels);
 
-      const passing = {};
+      const vetted = {};
       const failing = {};
       segments.forEach((segment, i) => {
         if (labels[i] === "w") {
           if (whitelist.hasOwnProperty(segment)) {
-            passing[segment] = 1;
+            vetted[segment] = 1;
           } else if (
             vettedVariables &&
             vettedVariables.hasOwnProperty(segment)
           ) {
-            passing[segment] = 1;
+            vetted[segment] = 1;
           } else if (i > 0 && segments[i - 1] === ".") {
             /*
               Word is fine to use after the . operator but not elsewhere. 
@@ -160,18 +160,18 @@
             ["let", "const", "var", "function"].includes(segments[i - 2])
           ) {
             // Word is declared as an identifier of a variable or function
-            passing[segment] = 1;
+            vetted[segment] = 1;
           } else if (parameterCheck(segments[i], i, parameters)) {
             // Word is being used as a parameter in a function declaration/expression
-            passing[segment] = 1;
+            vetted[segment] = 1;
           } else if (objectInitCheck(i, segments)) {
             /*
               Word is being initialized as an object property. It is not 
-              added to the passing object because it should not be useable
+              added to the vetted object because it should not be useable
               without dot notation.            
             */
-          } else if (passing.hasOwnProperty(segment)) {
-            // passing already knows about it. Do nothing.
+          } else if (vetted.hasOwnProperty(segment)) {
+            // vetted already knows about it. Do nothing.
           } else {
             failing[segment] = 1;
           }
@@ -186,7 +186,7 @@
             " * are not permitted to be used, unless declared as variables"
         );
       }
-      return passing;
+      return vetted;
     }
   };
 

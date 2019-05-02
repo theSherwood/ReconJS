@@ -75,41 +75,41 @@ describe("vetting", () => {
       whitelist = vetting.getWhitelistObject();
     });
 
-    it("returns an object containing passing words checked against a whitelist", () => {
+    it("returns an object containing vetted words checked against a whitelist", () => {
       const segments = ["let", " ", "const", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
 
-      const passing = vetting.checkWords(segments, labels, whitelist);
-      expect(passing["let"]).toBe(1);
-      expect(passing["const"]).toBe(1);
-      expect(passing["="]).toBe(undefined);
-      expect(passing["2"]).toBe(undefined);
+      const vetted = vetting.checkWords(segments, labels, whitelist);
+      expect(vetted["let"]).toBe(1);
+      expect(vetted["const"]).toBe(1);
+      expect(vetted["="]).toBe(undefined);
+      expect(vetted["2"]).toBe(undefined);
     });
 
-    it("passes declared variables/function names as well", () => {
+    it("vets declared variables/function names as well", () => {
       // The form must be <let,const,var,function> <identifier>
       const segments = ["let", " ", "x", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
 
-      const passing = vetting.checkWords(segments, labels, whitelist);
-      expect(passing["let"]).toBe(1);
-      expect(passing["x"]).toBe(1);
-      expect(passing["="]).toBe(undefined);
-      expect(passing["2"]).toBe(undefined);
+      const vetted = vetting.checkWords(segments, labels, whitelist);
+      expect(vetted["let"]).toBe(1);
+      expect(vetted["x"]).toBe(1);
+      expect(vetted["="]).toBe(undefined);
+      expect(vetted["2"]).toBe(undefined);
     });
 
-    it("passes words that are properties of allowedVariables", () => {
+    it("vets words that are properties of allowedVariables", () => {
       const segments = ["foo", " ", "bar", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
 
-      const passing = vetting.checkWords(segments, labels, whitelist, {
+      const vetted = vetting.checkWords(segments, labels, whitelist, {
         foo: 1,
         bar: 1
       });
-      expect(passing["foo"]).toBe(1);
-      expect(passing["bar"]).toBe(1);
-      expect(passing["="]).toBe(undefined);
-      expect(passing["2"]).toBe(undefined);
+      expect(vetted["foo"]).toBe(1);
+      expect(vetted["bar"]).toBe(1);
+      expect(vetted["="]).toBe(undefined);
+      expect(vetted["2"]).toBe(undefined);
     });
 
     it("allows words declared as variable identifiers or function names", () => {
@@ -159,11 +159,11 @@ describe("vetting", () => {
         " "
       ];
 
-      const passing = vetting.checkWords(segments, labels, whitelist);
-      expect(passing["foo"]).toBe(1);
-      expect(passing["bar"]).toBe(1);
-      expect(passing["word"]).toBe(1);
-      expect(passing["nameOfFunction"]).toBe(1);
+      const vetted = vetting.checkWords(segments, labels, whitelist);
+      expect(vetted["foo"]).toBe(1);
+      expect(vetted["bar"]).toBe(1);
+      expect(vetted["word"]).toBe(1);
+      expect(vetted["nameOfFunction"]).toBe(1);
     });
 
     it("throws an error if an undeclared word is used that isn't on the whitelist or allowedVariables object or used as a property", () => {
@@ -193,10 +193,10 @@ describe("vetting", () => {
         ];
         const labels = ["w", " ", "w", " ", " ", "w", " ", " ", " ", " "];
 
-        const passing = vetting.checkWords(segments, labels, whitelist);
-        expect(passing["foo"]).toBe(1);
-        expect(passing["bar"]).toBe(1);
-        expect(passing["function"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(1);
+        expect(vetted["bar"]).toBe(1);
+        expect(vetted["function"]).toBe(1);
       });
 
       it("allows multiple parameters to be passed into a function declaration", () => {
@@ -231,11 +231,11 @@ describe("vetting", () => {
           " "
         ];
 
-        const passing = vetting.checkWords(segments, labels, whitelist);
-        expect(passing["foo"]).toBe(1);
-        expect(passing["bar"]).toBe(1);
-        expect(passing["fulano"]).toBe(1);
-        expect(passing["function"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(1);
+        expect(vetted["bar"]).toBe(1);
+        expect(vetted["fulano"]).toBe(1);
+        expect(vetted["function"]).toBe(1);
       });
 
       it("throws an error if functions are defined without brackets", () => {
@@ -362,11 +362,11 @@ describe("vetting", () => {
           " "
         ];
 
-        const passing = vetting.checkWords(segments, labels, whitelist);
-        expect(passing["foo"]).toBe(1);
-        expect(passing["bar"]).toBe(1);
-        expect(passing["fulano"]).toBe(1);
-        expect(passing["function"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(1);
+        expect(vetted["bar"]).toBe(1);
+        expect(vetted["fulano"]).toBe(1);
+        expect(vetted["function"]).toBe(1);
       });
 
       it("throws an error if a parameter is used outside of the block of the function definition", () => {
@@ -437,16 +437,16 @@ describe("vetting", () => {
         const segments = ["(", "bar", ")", " ", "=", ">", " ", "{", "}"];
         const labels = [" ", "w", " ", " ", " ", " ", " ", " ", " "];
 
-        const passing = vetting.checkWords(segments, labels, whitelist);
-        expect(passing["bar"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["bar"]).toBe(1);
       });
 
       it("allows a single parameter passed into an arrow function declaration without parentheses", () => {
         const segments = [" ", "bar", " ", "=", ">", " ", "{", "}"];
         const labels = [" ", "w", " ", " ", " ", " ", " ", " "];
 
-        const passing = vetting.checkWords(segments, labels, whitelist);
-        expect(passing["bar"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["bar"]).toBe(1);
       });
 
       it("allows a multiple parameters passed into an arrow function declaration with parentheses", () => {
@@ -479,9 +479,9 @@ describe("vetting", () => {
           " "
         ];
 
-        const passing = vetting.checkWords(segments, labels, whitelist);
-        expect(passing["foo"]).toBe(1);
-        expect(passing["bar"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(1);
+        expect(vetted["bar"]).toBe(1);
       });
 
       it("throws an error if brackets are omitted on the arrow function expression", () => {
@@ -506,17 +506,17 @@ describe("vetting", () => {
     });
 
     describe("objects-and-properties", () => {
-      it("throws no error, but also does not pass words used as a property, immediately after a dot operator", () => {
+      it("throws no error, but also does not sign off on words used as a property, immediately after a dot operator", () => {
         const segments = ["foo", ".", "bar", " ", "=", " ", "2"];
         const labels = ["w", " ", "w", " ", " ", " ", "n"];
 
-        const passing = vetting.checkWords(segments, labels, whitelist, {
+        const vetted = vetting.checkWords(segments, labels, whitelist, {
           foo: 1
         });
-        expect(passing["foo"]).toBe(1);
-        expect(passing["bar"]).toBe(undefined);
-        expect(passing["="]).toBe(undefined);
-        expect(passing["2"]).toBe(undefined);
+        expect(vetted["foo"]).toBe(1);
+        expect(vetted["bar"]).toBe(undefined);
+        expect(vetted["="]).toBe(undefined);
+        expect(vetted["2"]).toBe(undefined);
       });
 
       it("throws an error if a property is used as an identifier", () => {
@@ -534,7 +534,7 @@ describe("vetting", () => {
         );
       });
 
-      it("throws no error, but also doesn't pass a word that is used to initialize a property on an object literal", () => {
+      it("throws no error, but also doesn't sign off on a word that is used to initialize a property on an object literal", () => {
         const segments = [
           "const",
           " ",
@@ -566,11 +566,11 @@ describe("vetting", () => {
           " "
         ];
 
-        const passing = vetting.checkWords(segments, labels, whitelist, {
+        const vetted = vetting.checkWords(segments, labels, whitelist, {
           foo: 1
         });
-        expect(passing["foo"]).toBe(1);
-        expect(passing["bar"]).toBe(undefined);
+        expect(vetted["foo"]).toBe(1);
+        expect(vetted["bar"]).toBe(undefined);
       });
 
       it("throws an error if a word used to initialize and object property is used as an identifier", () => {
