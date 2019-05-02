@@ -150,17 +150,28 @@
           ) {
             passing[segment] = 1;
           } else if (i > 0 && segments[i - 1] === ".") {
-            passing[segment] = 1;
+            /*
+              Word is fine to use after the . operator but not elsewhere. 
+              Do nothing.
+            */
           } else if (
             i > 1 &&
             segments[i - 1] === " " &&
             ["let", "const", "var", "function"].includes(segments[i - 2])
           ) {
+            // Word is declared as an identifier of a variable or function
             passing[segment] = 1;
           } else if (parameterCheck(segments[i], i, parameters)) {
+            // Word is being used as a parameter in a function declaration/expression
             passing[segment] = 1;
+          } else if (objectInitCheck(i, segments)) {
+            /*
+              Word is being initialized as an object property. It is not 
+              added to the passing object because it should not be useable
+              without dot notation.            
+            */
           } else if (passing.hasOwnProperty(segment)) {
-            // do nothing
+            // passing already knows about it. Do nothing.
           } else {
             failing[segment] = 1;
           }
@@ -170,7 +181,7 @@
       if (failures.length > 0) {
         // console.log(segments, labels);
         throw new Error(
-          "SanitizeJS: The words * " +
+          "SanitizeJS: The identifier(s) * " +
             failures.join(", ") +
             " * are not permitted to be used, unless declared as variables"
         );
@@ -197,9 +208,47 @@
     return passesCheck;
   };
 
+  const objectInitCheck = (i, segments) => {
+    /*
+      Checks if word is being used to initialize a property in an
+      object literal. It is somewhat more permissive than that, though.
+      It will also allow a statement label in a block. Referencing
+      that label will through an error, however.
+    */
+    return (
+      isNext(i, segments, [":"]) > -1 && // look ahead for ':'
+      isNext(i, segments, [",", "{"], false) > -1 // look behind for ',' or '{'
+    );
+  };
+
+  const isNext = (i, segments, targets, forward = true) => {
+    /*
+      Checks for the next non-whitespace segment in some direction
+      and compares it against an array of targets.
+    */
+    const modifier = forward ? 1 : -1; // look in which direction?
+    let j = i;
+    while (j > -1 && j < segments.length) {
+      j += modifier;
+      if (segments[j] === " ") continue; // encountered space
+      if (targets.includes(segments[j])) return j; // encountered a target
+      return -2; // encountered something that was not space or target
+    }
+    return -1; // nothing but whitespace in that direction
+  };
+
   const getFunctionParameters = (segments, labels) => {
+    /* 
+      Since we can't simply vet words that are used as parameters as
+      that would allow them to be used outside of the function definition,
+      perhaps to access the global scope; the parameters object will 
+      store parameter names as keys and the values will be arrays of ranges
+      that coincide with the function definition. Use of one of these 
+      parameters outside of the relevant ranges will throw an error.
+    */
     const parameters = {};
 
+    // Integrate new parameters with the parameters object
     const addParameters = paramsObject => {
       paramsObject.params.forEach(param => {
         if (parameters.hasOwnProperty(param)) {
