@@ -144,6 +144,13 @@
             ["let", "const", "var", "function"].includes(segments[i - 2])
           ) {
             passing[segment] = 1;
+          } else if (
+            i > 4 &&
+            segments[i - 1] === "(" &&
+            segments[i - 2] === " " &&
+            segments[i - 5] === "function"
+          ) {
+            passing[segment] = 1;
           } else if (passing.hasOwnProperty(segment)) {
             // do nothing
           } else {
@@ -153,6 +160,7 @@
       });
       const failures = Object.keys(failing);
       if (failures.length > 0) {
+        console.log(segments, labels);
         throw new Error(
           "SanitizeJS: The words * " +
             failures.join(", ") +

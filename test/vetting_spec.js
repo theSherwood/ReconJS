@@ -87,6 +87,7 @@ describe("vetting", () => {
     });
 
     it("passes declared variables/function names as well", () => {
+      // The form must be <let,const,var,function> <identifier>
       const segments = ["let", " ", "x", " ", "=", " ", "2"];
       const labels = ["w", " ", "w", " ", " ", " ", "n"];
 
@@ -125,6 +126,7 @@ describe("vetting", () => {
     });
 
     it("allows words declared as variable identifiers or function names", () => {
+      // The form must be <let,const,var,function> <identifier>
       const segments = [
         "let",
         " ",
@@ -176,6 +178,16 @@ describe("vetting", () => {
           "SanitizeJS: The words * harvey * are not permitted to be used, unless declared as variables"
         )
       );
+    });
+
+    it("allows a single parameter passed into a function declaration", () => {
+      const segments = ["function", " ", "foo", " ", "(", "bar", ")"];
+      const labels = ["w", " ", "w", " ", " ", "w", " "];
+
+      const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["foo"]).toBe(1);
+      expect(passing["bar"]).toBe(1);
+      expect(passing["function"]).toBe(1);
     });
   });
 });
