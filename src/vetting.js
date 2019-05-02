@@ -151,6 +151,14 @@
             segments[i - 5] === "function"
           ) {
             passing[segment] = 1;
+          } else if (
+            i < segments.length - 4 &&
+            segments[i + 1] === ")" &&
+            segments[i + 2] === " " &&
+            segments[i + 3] === "=" &&
+            segments[i + 4] === ">"
+          ) {
+            passing[segment] = 1;
           } else if (passing.hasOwnProperty(segment)) {
             // do nothing
           } else {

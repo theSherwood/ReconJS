@@ -189,5 +189,13 @@ describe("vetting", () => {
       expect(passing["bar"]).toBe(1);
       expect(passing["function"]).toBe(1);
     });
+
+    it("allows a single parameter passed into an arrow function declaration with parentheses", () => {
+      const segments = ["(", "bar", ")", " ", "=", ">"];
+      const labels = [" ", "w", " ", " ", " ", " "];
+
+      const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["bar"]).toBe(1);
+    });
   });
 });
