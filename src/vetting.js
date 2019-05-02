@@ -227,29 +227,28 @@
 
   const getFunctionParameters = (segments, labels) => {
     const parameters = {};
+
+    const addParameters = paramsObject => {
+      paramsObject.params.forEach(param => {
+        if (parameters.hasOwnProperty(param)) {
+          parameters[param].push(paramsObject.range);
+        } else {
+          parameters[param] = [paramsObject.range];
+        }
+      });
+    };
+
     for (let i = 0; i < segments.length; i++) {
       if (segments[i] === "function") {
-        const params = getTradFuncParams(i, segments, labels);
-        params.params.forEach(param => {
-          if (parameters.hasOwnProperty(param)) {
-            parameters[param].push(params.params.range);
-          } else {
-            parameters[param] = [params.params.range];
-          }
-        });
+        const paramsObject = getTradFuncParams(i, segments, labels);
+        addParameters(paramsObject);
       } else if (
         i < segments.length - 1 &&
         segments[i] === "=" &&
         segments[i + 1] === ">"
       ) {
-        const params = getArrowFuncParams(i, segments, labels);
-        params.params.forEach(param => {
-          if (parameters.hasOwnProperty(param)) {
-            parameters[param].push(params.params.range);
-          } else {
-            parameters[param] = [params.params.range];
-          }
-        });
+        const paramsObject = getArrowFuncParams(i, segments, labels);
+        addParameters(paramsObject);
       }
     }
     return parameters;
@@ -329,29 +328,38 @@
     let closingParenthesis = -1;
     for (let j = i - 1; j > -1; j--) {
       if (rangeStart > -1) break;
-      if (segments[j] === ")") closingParenthesis = j;
+      if (closingParenthesis < 0 && segments[j] === ")") {
+        closingParenthesis = j;
+        continue;
+      }
       if (closingParenthesis < 0) {
         if (labels[j] === "w") {
+          // single parameter, no parentheses
           params.push(segments[j]);
           rangeStart = j;
+          break;
         }
       } else {
-        switch (openingParenthesis < 0) {
-          case segments[j] === "(":
-            rangeStart = j;
-            break;
-          case labels[j] === "w":
-            params.push(segments[j]);
-            break;
-          case [",", " "].includes(segments[j]):
-            break;
-          default:
-            throw new Error(
-              "SanitizeJS: Function parameters must be passed as a simple, comma-separated list without default values"
-            );
+        if (openingParenthesis < 0) {
+          switch (true) {
+            case segments[j] === "(":
+              openingParenthesis = j;
+              rangeStart = j;
+              break;
+            case labels[j] === "w":
+              params.push(segments[j]);
+              break;
+            case [",", " "].includes(segments[j]):
+              break;
+            default:
+              throw new Error(
+                "SanitizeJS: Function parameters must be passed as a simple, comma-separated list without default values"
+              );
+          }
         }
       }
     }
+
     for (let k = i + 2; k < segments.length; k++) {
       if (
         (k === i + 2 && segments[k] !== " ") ||
@@ -364,18 +372,21 @@
       if (segments[k] === "{" && bracketStart < 0) {
         bracketStart = k;
         bracketStack.push("{");
+        continue;
       }
-      switch (bracketStart > 0 && bracketEnd < 0) {
-        case segments[k] === "{":
-          bracketStack.push("{");
-          break;
-        case segments[k] === "}":
-          bracketStack.pop();
-          if (bracketStack.length === 0) {
-            bracketEnd = k;
-            return { params, range: [rangeStart, bracketEnd] };
-          }
-          break;
+      if (bracketStart > -1 && bracketEnd < 0) {
+        switch (segments[k]) {
+          case "{":
+            bracketStack.push("{");
+            break;
+          case "}":
+            bracketStack.pop();
+            if (bracketStack.length === 0) {
+              bracketEnd = k;
+              return { params, range: [rangeStart, bracketEnd] };
+            }
+            break;
+        }
       }
     }
     throw new Error("SanitizeJS: Function declaration error");
