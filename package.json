@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start",
-    "run": "karma start karma.main_run.conf.js"
+    "run": "karma start karma.main_run.conf.js",
+    "vetting": "karma start karma.vetting.conf.js"
   },
   "author": "Adam Sherwood",
   "license": "MIT",
