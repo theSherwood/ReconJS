@@ -142,7 +142,12 @@ describe("vetting", () => {
         " ",
         "function",
         " ",
-        "nameOfFunction"
+        "nameOfFunction",
+        "(",
+        ")",
+        " ",
+        "{",
+        "}"
       ];
       const labels = [
         "w",
@@ -159,7 +164,12 @@ describe("vetting", () => {
         " ",
         "w",
         " ",
-        "w"
+        "w",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
       ];
 
       const passing = vetting.checkWords(segments, labels, whitelist);
@@ -181,8 +191,19 @@ describe("vetting", () => {
     });
 
     it("allows a single parameter passed into a function declaration", () => {
-      const segments = ["function", " ", "foo", " ", "(", "bar", ")"];
-      const labels = ["w", " ", "w", " ", " ", "w", " "];
+      const segments = [
+        "function",
+        " ",
+        "foo",
+        " ",
+        "(",
+        "bar",
+        ")",
+        " ",
+        "{",
+        "}"
+      ];
+      const labels = ["w", " ", "w", " ", " ", "w", " ", " ", " ", " "];
 
       const passing = vetting.checkWords(segments, labels, whitelist);
       expect(passing["foo"]).toBe(1);
@@ -201,9 +222,26 @@ describe("vetting", () => {
         ",",
         " ",
         "fulano",
-        ")"
+        ")",
+        " ",
+        "{",
+        "}"
       ];
-      const labels = ["w", " ", "w", " ", " ", "w", " ", " ", "w", " "];
+      const labels = [
+        "w",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        " ",
+        " "
+      ];
 
       const passing = vetting.checkWords(segments, labels, whitelist);
       expect(passing["foo"]).toBe(1);
@@ -228,7 +266,7 @@ describe("vetting", () => {
       expect(passing["bar"]).toBe(1);
     });
 
-    it("allows a single parameter passed into an arrow function declaration with parentheses", () => {
+    it("allows a multiple parameters passed into an arrow function declaration with parentheses", () => {
       const segments = ["(", "foo", ",", " ", "bar", ")", " ", "=", ">"];
       const labels = [" ", "w", " ", " ", "w", " ", " ", " ", " "];
 
