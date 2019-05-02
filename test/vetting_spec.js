@@ -250,6 +250,201 @@ describe("vetting", () => {
       expect(passing["function"]).toBe(1);
     });
 
+    it("throws an error if functions are defined without brackets", () => {
+      const segments = [
+        "function",
+        " ",
+        "foo",
+        " ",
+        "(",
+        "bar",
+        ",",
+        " ",
+        "fulano",
+        ")",
+        " ",
+        " "
+      ];
+      const labels = [
+        "w",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        " "
+      ];
+
+      expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
+        new Error(
+          "SanitizeJS: Function declaration open bracket must follow the parameter list close parenthisis after one space"
+        )
+      );
+    });
+
+    it("throws an error if function parameters are assigned default values", () => {
+      const segments = [
+        "function",
+        " ",
+        "foo",
+        " ",
+        "(",
+        "bar",
+        " ",
+        "=",
+        " ",
+        "fulano",
+        ")",
+        " "
+      ];
+      const labels = [
+        "w",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        " ",
+        "w",
+        " ",
+        " "
+      ];
+
+      expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
+        new Error(
+          "SanitizeJS: Function parameters must be passed as a simple, comma-separated list without default values"
+        )
+      );
+    });
+
+    it("allows for the use of parameters within the block of a function declaration", () => {
+      const segments = [
+        "function",
+        " ",
+        "foo",
+        " ",
+        "(",
+        "bar",
+        ",",
+        " ",
+        "fulano",
+        ")",
+        " ",
+        "{",
+        " ",
+        "return",
+        " ",
+        "bar",
+        " ",
+        "+",
+        " ",
+        "fulano",
+        " ",
+        "}"
+      ];
+      const labels = [
+        "w",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        " ",
+        " ",
+        "w",
+        " ",
+        "w",
+        " ",
+        " ",
+        " ",
+        "w",
+        " ",
+        " "
+      ];
+
+      const passing = vetting.checkWords(segments, labels, whitelist);
+      expect(passing["foo"]).toBe(1);
+      expect(passing["bar"]).toBe(1);
+      expect(passing["fulano"]).toBe(1);
+      expect(passing["function"]).toBe(1);
+    });
+
+    it("throws an error if a parameter is used outside of the block of the function definition", () => {
+      const segments = [
+        "function",
+        " ",
+        "foo",
+        " ",
+        "(",
+        "bar",
+        ",",
+        " ",
+        "fulano",
+        ")",
+        " ",
+        "{",
+        "}",
+        ";",
+        " ",
+        "bar",
+        " ",
+        "+",
+        " ",
+        "fulano",
+        " "
+      ];
+      const labels = [
+        "w",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        "w",
+        " ",
+        " ",
+        " ",
+        "w",
+        " "
+      ];
+
+      expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
+        new Error(
+          "SanitizeJS: The parameter * bar * is used outside of the appropriate function definition"
+        )
+      );
+    });
+
+    it("throws an error if the function definition is too short", () => {
+      const segments = ["function", " ", "foo", " "];
+      const labels = ["w", " ", "w", " "];
+
+      expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
+        new Error("SanitizeJS: Function declaration error")
+      );
+    });
+
     it("allows a single parameter passed into an arrow function declaration with parentheses", () => {
       const segments = ["(", "bar", ")", " ", "=", ">", " ", "{", "}"];
       const labels = [" ", "w", " ", " ", " ", " ", " ", " ", " "];
@@ -299,6 +494,26 @@ describe("vetting", () => {
       const passing = vetting.checkWords(segments, labels, whitelist);
       expect(passing["foo"]).toBe(1);
       expect(passing["bar"]).toBe(1);
+    });
+
+    it("throws an error if brackets are omitted on the arrow function expression", () => {
+      const segments = [" ", "bar", " ", "=", ">", " ", ""];
+      const labels = [" ", "w", " ", " ", " ", " ", ""];
+
+      expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
+        new Error(
+          "SanitizeJS: Arrow function declarations must use brackets. Function declaration open bracket must follow the arrow after one space"
+        )
+      );
+    });
+
+    it("throws an error if the arrow function expression is too short or if there is some other error", () => {
+      const segments = [" ", "bar", " ", "=", ">", " "];
+      const labels = [" ", "w", " ", " ", " ", " "];
+
+      expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
+        new Error("SanitizeJS: Function declaration error")
+      );
     });
   });
 });

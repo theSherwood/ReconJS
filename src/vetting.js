@@ -1,5 +1,13 @@
 "use strict";
 
+/*
+
+!!!!!    DevNotes    !!!!!
+
+* No support for object properties as yet
+
+*/
+
 (function() {
   const whitelistArray = [
     "do",
@@ -180,6 +188,11 @@
           passesCheck = true;
         }
       });
+      if (!passesCheck) {
+        throw new Error(
+          `SanitizeJS: The parameter * ${parameter} * is used outside of the appropriate function definition`
+        );
+      }
     }
     return passesCheck;
   };
@@ -241,7 +254,7 @@
               break;
             default:
               throw new Error(
-                "SanitizeJS: Function parameters must be passed as a simple, comma-separated list without defualt values"
+                "SanitizeJS: Function parameters must be passed as a simple, comma-separated list without default values"
               );
           }
         }
@@ -256,7 +269,7 @@
           bracketStack.push("{");
           continue;
         }
-        if (bracketStart > 0 && bracketEnd < 0) {
+        if (bracketStart > -1 && bracketEnd < 0) {
           switch (segments[j]) {
             case "{":
               bracketStack.push("{");
