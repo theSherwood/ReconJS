@@ -7,6 +7,9 @@ export default {
     file: "bundle.js",
     format: "iife"
   },
+  watch: {
+    include: "src/**"
+  },
   plugins: [
     commonjs({
       include: "src/**"

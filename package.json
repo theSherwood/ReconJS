@@ -7,7 +7,7 @@
     "test": "karma start",
     "run": "karma start karma.main_run.conf.js",
     "vetting": "karma start karma.vetting.conf.js",
-    "build": "rollup -c"
+    "build": "rollup -c --watch"
   },
   "author": "Adam Sherwood",
   "license": "MIT",
