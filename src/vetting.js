@@ -187,6 +187,18 @@
         );
       }
       return vetted;
+    },
+
+    containsComment: (labels, segments) => {
+      for (let i = 0; i < labels.length - 1; i++) {
+        if (labels[i] === " " && labels[i + 1] === " ") {
+          if (segments[i] === "/") {
+            if (segments[i + 1] === "/" || segments[i + 1] === "*") {
+              throw new Error("SanitizeJS: comments are not allowed");
+            }
+          }
+        }
+      }
     }
   };
 

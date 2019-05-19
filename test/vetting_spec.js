@@ -739,5 +739,82 @@ describe("vetting", () => {
         );
       });
     });
+    describe("comments", () => {
+      it("throws an error if the string contains a single-line comment", () => {
+        const segments = [
+          "const",
+          " ",
+          "foo",
+          " ",
+          "=",
+          " ",
+          "2",
+          " ",
+          "/",
+          "/",
+          " ",
+          "bar"
+        ];
+        const labels = [
+          "w",
+          " ",
+          "w",
+          " ",
+          " ",
+          " ",
+          "n",
+          " ",
+          " ",
+          " ",
+          " ",
+          "w"
+        ];
+
+        expect(() => vetting.containsComment(labels, segments)).toThrow(
+          new Error("SanitizeJS: comments are not allowed")
+        );
+      });
+
+      it("throws an error if the string contains a multi-line comment", () => {
+        const segments = [
+          "const",
+          " ",
+          "foo",
+          " ",
+          "=",
+          " ",
+          "2",
+          " ",
+          "/",
+          "*",
+          " ",
+          "bar",
+          " ",
+          "*",
+          "/"
+        ];
+        const labels = [
+          "w",
+          " ",
+          "w",
+          " ",
+          " ",
+          " ",
+          "n",
+          " ",
+          " ",
+          " ",
+          " ",
+          "w",
+          " ",
+          " ",
+          " "
+        ];
+
+        expect(() => vetting.containsComment(labels, segments)).toThrow(
+          new Error("SanitizeJS: comments are not allowed")
+        );
+      });
+    });
   });
 });
