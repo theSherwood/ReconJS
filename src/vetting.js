@@ -193,7 +193,7 @@
         if (labels[i] === " " && labels[i + 1] === " ") {
           if (segments[i] === "/") {
             if (segments[i + 1] === "/" || segments[i + 1] === "*") {
-              throw new Error("SanitizeJS: comments are not allowed");
+              throw new Error("SanitizeJS: Comments are not allowed");
             }
           }
         }
@@ -201,21 +201,66 @@
     },
 
     checkDeclarationScope: (labels, segments, vetted) => {
-      const scopeTree = buildScope(labels, segments, 0, null);
-      console.log(scopeTree);
+      const scopeTree = buildScope(labels, segments, -1, null);
+
       if (scopeTree.end < labels.length - 1) {
         // Check for extra closing bracket
         for (let i = scopeTree.end + 1; i < labels.length; i++) {
           if (segments[i] === "}") {
-            throw new Error("SanitizeJS: scope error");
+            throw new Error("SanitizeJS: Scope error.");
           }
         }
       }
 
-      // Object.keys(vetted).forEach(variable => {
+      Object.entries(vetted).forEach(([identifier, val]) => {
+        if (val !== 2) return; // the vetted identifier is not a declared variable
+        const locations = getIdentifierLocations(segments, identifier);
 
-      // })
+        locations.forEach(location => {
+          findScopeOfLocation(scopeTree, location, identifier);
+        });
+      });
     }
+  };
+
+  const findScopeOfLocation = (scopeTree, location, identifier) => {
+    if (scopeTree.declarations.includes(identifier)) return;
+    const absLoc = Math.abs(location);
+    const scope = scopeTree.children.find(child => {
+      console.log(child.start, absLoc, child.end);
+      return child.start < absLoc && absLoc < child.end;
+    });
+    if (scope) {
+      findScopeOfLocation(scope, location, identifier);
+    } else {
+      if (location < 0) {
+        // neg location means it was a declaration
+        scopeTree.declarations.push(identifier);
+      } else {
+        throw new Error(
+          `SanitizeJS: Scope error. The identifier * ${identifier} * was used outside of declaration scope.`
+        );
+      }
+    }
+  };
+
+  const getIdentifierLocations = (segments, identifier) => {
+    const locations = [];
+    for (let i = 0; i < segments.length; i++) {
+      if (identifier === segments[i]) {
+        // check for declaration
+        if (
+          isNext(i, segments, ["let", "const", "var", "function"], false) > -1
+        ) {
+          // use a negative number to indicate that the identifier is declared at positive i
+          locations.push(-i);
+        } else {
+          // use a positive number to indicate that the identifier is otherwise accessed
+          locations.push(i);
+        }
+      }
+    }
+    return locations.sort();
   };
 
   class Scope {
@@ -224,6 +269,7 @@
       this.end = end;
       this.parent = parent;
       this.children = [];
+      this.declarations = [];
     }
   }
 
@@ -237,17 +283,19 @@
         scope.children.push(childScope);
         continue;
       } else if (labels[j] === " " && segments[j] === "}") {
-        if (segments[i] !== "{") {
-          throw new Error("SanitizeJS: scope error");
+        if (i === -1) {
+          throw new Error("SanitizeJS: Scope error.");
         }
         scope.end = j;
         return scope;
       }
     }
-    if (!(scope.parent === null && segments[i] !== "{")) {
-      throw new Error("SanitizeJS: scope error");
+    if (i === -1) {
+      scope.end = labels.length;
+      return scope;
     }
-    return scope;
+
+    throw new Error("SanitizeJS: Scope error.");
   };
 
   const parameterCheck = (parameter, location, parameters) => {
