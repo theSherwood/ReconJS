@@ -763,7 +763,7 @@ describe("vetting", () => {
         ];
 
         expect(() => vetting.checkForComments(labels, segments)).toThrow(
-          new Error("SanitizeJS: comments are not allowed")
+          new Error("SanitizeJS: Comments are not allowed")
         );
       });
 
@@ -804,7 +804,7 @@ describe("vetting", () => {
         ];
 
         expect(() => vetting.checkForComments(labels, segments)).toThrow(
-          new Error("SanitizeJS: comments are not allowed")
+          new Error("SanitizeJS: Comments are not allowed")
         );
       });
     });
