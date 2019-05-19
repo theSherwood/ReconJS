@@ -573,6 +573,125 @@ describe("vetting", () => {
         expect(vetted["bar"]).toBe(undefined);
       });
 
+      it("handles non-space whitespace in object literal declarations", () => {
+        const segments = [
+          "const",
+          " ",
+          "foo",
+          " ",
+          "=",
+          " ",
+          "{",
+          "\n",
+          "bar",
+          "\t",
+          ":",
+          " ",
+          "2",
+          "}"
+        ];
+        const labels = [
+          "w",
+          " ",
+          "w",
+          " ",
+          " ",
+          " ",
+          " ",
+          " ",
+          "w",
+          " ",
+          " ",
+          " ",
+          "n",
+          " "
+        ];
+
+        const vetted = vetting.checkWords(segments, labels, whitelist, {
+          foo: 1
+        });
+        expect(vetted["foo"]).toBe(1);
+        expect(vetted["bar"]).toBe(undefined);
+      });
+
+      it("handles multiple property declarations", () => {
+        const segments = [
+          "{",
+          "\n",
+          "foo",
+          ":",
+          " ",
+          "1",
+          ",",
+          "\n",
+          "bar",
+          ":",
+          " ",
+          "2",
+          "}"
+        ];
+        const labels = [
+          " ",
+          " ",
+          "w",
+          " ",
+          " ",
+          "n",
+          " ",
+          " ",
+          "w",
+          " ",
+          " ",
+          "n",
+          " "
+        ];
+
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(undefined);
+        expect(vetted["bar"]).toBe(undefined);
+      });
+
+      it("handles nested property declarations", () => {
+        const segments = [
+          "{",
+          "\n",
+          "foo",
+          ":",
+          " ",
+          "{",
+          "\n",
+          "bar",
+          ":",
+          " ",
+          "2",
+          "\n",
+          "}",
+          "\n",
+          "}"
+        ];
+        const labels = [
+          " ",
+          " ",
+          "w",
+          " ",
+          " ",
+          " ",
+          " ",
+          "w",
+          " ",
+          " ",
+          "n",
+          " ",
+          " ",
+          " ",
+          " "
+        ];
+
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(undefined);
+        expect(vetted["bar"]).toBe(undefined);
+      });
+
       it("throws an error if a word used to initialize an object property is used as an identifier", () => {
         const segments = [
           "const",
