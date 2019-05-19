@@ -230,11 +230,13 @@
     let j = i;
     while (j > -1 && j < segments.length) {
       j += modifier;
-      if (segments[j] === " ") continue; // encountered space
       if (targets.includes(segments[j])) return j; // encountered a target
-      return -2; // encountered something that was not space or target
+      if (/\S/.test(segments[j])) {
+        // encountered something that was not space or target
+        return -2;
+      }
     }
-    return -1; // nothing but whitespace in that direction
+    return -1; // nothing but perhaps whitespace in that direction
   };
 
   const getFunctionParameters = (segments, labels) => {
