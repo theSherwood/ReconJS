@@ -18,14 +18,14 @@ describe("SanitizeJS", function() {
       expect(sjs.run("x + 4", { x })).toBe(9);
     });
 
-    it("returns an error message if variables are not passed in to the allowedVariables object", () => {
+    it("throws an error message if variables are not passed in to the allowedVariables object", () => {
       let x = 5;
       expect(sjs.run("x + 4")).toEqual(
         "SanitizeJS: The identifier(s) * x * are not permitted to be used, unless declared as variables"
       );
     });
 
-    it("returns an error message if a keyword is not whitelisted", () => {
+    it("throws an error message if a keyword is not whitelisted", () => {
       expect(sjs.run("window")).toEqual(
         "SanitizeJS: The identifier(s) * window * are not permitted to be used, unless declared as variables"
       );

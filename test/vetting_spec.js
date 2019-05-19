@@ -93,7 +93,7 @@ describe("vetting", () => {
 
       const vetted = vetting.checkWords(segments, labels, whitelist);
       expect(vetted["let"]).toBe(1);
-      expect(vetted["x"]).toBe(1);
+      expect(vetted["x"]).toBe(2);
       expect(vetted["="]).toBe(undefined);
       expect(vetted["2"]).toBe(undefined);
     });
@@ -160,14 +160,14 @@ describe("vetting", () => {
       ];
 
       const vetted = vetting.checkWords(segments, labels, whitelist);
-      expect(vetted["foo"]).toBe(1);
-      expect(vetted["bar"]).toBe(1);
-      expect(vetted["word"]).toBe(1);
-      expect(vetted["nameOfFunction"]).toBe(1);
+      expect(vetted["foo"]).toBe(2);
+      expect(vetted["bar"]).toBe(2);
+      expect(vetted["word"]).toBe(2);
+      expect(vetted["nameOfFunction"]).toBe(2);
     });
 
     it("throws an error if an undeclared word is used that isn't on the whitelist or allowedVariables object or used as a property", () => {
-      const segments = ["let", "const", "harvey"];
+      const segments = ["let", "Object", "harvey"];
       const labels = ["w", "w", "w"];
 
       expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
@@ -194,7 +194,7 @@ describe("vetting", () => {
         const labels = ["w", " ", "w", " ", " ", "w", " ", " ", " ", " "];
 
         const vetted = vetting.checkWords(segments, labels, whitelist);
-        expect(vetted["foo"]).toBe(1);
+        expect(vetted["foo"]).toBe(2);
         expect(vetted["bar"]).toBe(1);
         expect(vetted["function"]).toBe(1);
       });
@@ -232,7 +232,7 @@ describe("vetting", () => {
         ];
 
         const vetted = vetting.checkWords(segments, labels, whitelist);
-        expect(vetted["foo"]).toBe(1);
+        expect(vetted["foo"]).toBe(2);
         expect(vetted["bar"]).toBe(1);
         expect(vetted["fulano"]).toBe(1);
         expect(vetted["function"]).toBe(1);
@@ -363,7 +363,7 @@ describe("vetting", () => {
         ];
 
         const vetted = vetting.checkWords(segments, labels, whitelist);
-        expect(vetted["foo"]).toBe(1);
+        expect(vetted["foo"]).toBe(2);
         expect(vetted["bar"]).toBe(1);
         expect(vetted["fulano"]).toBe(1);
         expect(vetted["function"]).toBe(1);
@@ -566,10 +566,8 @@ describe("vetting", () => {
           " "
         ];
 
-        const vetted = vetting.checkWords(segments, labels, whitelist, {
-          foo: 1
-        });
-        expect(vetted["foo"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(2);
         expect(vetted["bar"]).toBe(undefined);
       });
 
@@ -607,10 +605,8 @@ describe("vetting", () => {
           " "
         ];
 
-        const vetted = vetting.checkWords(segments, labels, whitelist, {
-          foo: 1
-        });
-        expect(vetted["foo"]).toBe(1);
+        const vetted = vetting.checkWords(segments, labels, whitelist);
+        expect(vetted["foo"]).toBe(2);
         expect(vetted["bar"]).toBe(undefined);
       });
 
@@ -728,11 +724,7 @@ describe("vetting", () => {
           "w"
         ];
 
-        expect(() =>
-          vetting.checkWords(segments, labels, whitelist, {
-            foo: 1
-          })
-        ).toThrow(
+        expect(() => vetting.checkWords(segments, labels, whitelist)).toThrow(
           new Error(
             "SanitizeJS: The identifier(s) * bar * are not permitted to be used, unless declared as variables"
           )
@@ -770,7 +762,7 @@ describe("vetting", () => {
           "w"
         ];
 
-        expect(() => vetting.containsComment(labels, segments)).toThrow(
+        expect(() => vetting.checkForComments(labels, segments)).toThrow(
           new Error("SanitizeJS: comments are not allowed")
         );
       });
@@ -811,7 +803,7 @@ describe("vetting", () => {
           " "
         ];
 
-        expect(() => vetting.containsComment(labels, segments)).toThrow(
+        expect(() => vetting.checkForComments(labels, segments)).toThrow(
           new Error("SanitizeJS: comments are not allowed")
         );
       });
