@@ -30,6 +30,17 @@ Run code in a sandbox with only the specified context variables in scope
       this.whitelist = vetting.getWhitelistObject();
     }
 
+    vet(jsString, allowedVariables) {
+      try {
+        const [segments, labels] = split(jsString);
+        // console.log("post-split", segments, labels);
+        vetting.checkWords(segments, labels, this.whitelist, allowedVariables);
+      } catch (err) {
+        // console.log("err at first block!");
+        return err.message;
+      }
+    }
+
     run(jsString, allowedVariables) {
       let result;
       try {
@@ -70,10 +81,3 @@ Run code in a sandbox with only the specified context variables in scope
 
   module.exports = SanitizeJS;
 })();
-
-// // /*
-// // const reservedWords = [
-// //   'do', 'if', 'in', 'for', 'let', 'new', 'try', 'var', 'case', 'else', 'enum', 'eval', 'null', 'true', 'this', 'void', 'with', 'await', 'break', 'catch', 'class', 'const', 'false', 'super', 'throw', 'while', 'yield', 'delete', 'export', 'import', 'public', 'return', 'static', 'switch', 'typeof', 'default', 'extends', 'finally', 'package', 'private', 'continue', 'debugger', 'function', 'arguments', 'interface', 'protected', 'implements', 'instanceof',
-// //   'undefined', 'NaN', 'Math', 'Number', 'Object', 'Array', 'Set', 'Map', 'Date', 'alert', 'console', 'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'JSON', 'parseFloat', 'parseInt', 'prototype', 'String', 'setTimeout', 'setInterval', 'isPrototypeOf', 'isNaN', 'toString', 'of', 'Boolean', 'RegExp', 'Infinity', 'isFinite', 'Function', 'Symbol', 'Error', 'BigInt', 'Generator', 'GeneratorFunction', 'Promise', 'async', 'await', 'AsyncFunction'
-// // ]
-// // */
