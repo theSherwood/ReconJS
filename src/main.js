@@ -34,8 +34,14 @@ Run code in a sandbox with only the specified context variables in scope
       try {
         const [segments, labels] = split(jsString);
         // console.log("post-split", segments, labels);
-        vetting.checkWords(segments, labels, this.whitelist, allowedVariables);
-        vetting.containsComment(labels, segments);
+        const vetted = vetting.checkWords(
+          segments,
+          labels,
+          this.whitelist,
+          allowedVariables
+        );
+        vetting.checkForComments(labels, segments);
+        vetting.checkDeclarationScope(labels, segments, vetted);
       } catch (err) {
         // console.log("err at first block!");
         return err.message;
@@ -44,15 +50,9 @@ Run code in a sandbox with only the specified context variables in scope
 
     run(jsString, allowedVariables) {
       let result;
-      try {
-        const [segments, labels] = split(jsString);
-        // console.log("post-split", segments, labels);
-        vetting.checkWords(segments, labels, this.whitelist, allowedVariables);
-        vetting.containsComment(labels, segments);
-      } catch (err) {
-        // console.log("err at first block!");
-        return err.message;
-      }
+      const vetError = this.vet(jsString, allowedVariables);
+      if (vetError) return vetError;
+
       try {
         if (!allowedVariables) {
           allowedVariables = {};
