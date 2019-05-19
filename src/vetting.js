@@ -156,11 +156,10 @@
             */
           } else if (
             i > 1 &&
-            segments[i - 1] === " " &&
-            ["let", "const", "var", "function"].includes(segments[i - 2])
+            isNext(i, segments, ["let", "const", "var", "function"], false) > -1
           ) {
             // Word is declared as an identifier of a variable or function
-            vetted[segment] = 1;
+            vetted[segment] = 2; // 2 is for declared variables
           } else if (parameterCheck(segments[i], i, parameters)) {
             // Word is being used as a parameter in a function declaration/expression
             vetted[segment] = 1;
@@ -189,7 +188,7 @@
       return vetted;
     },
 
-    containsComment: (labels, segments) => {
+    checkForComments: (labels, segments) => {
       for (let i = 0; i < labels.length - 1; i++) {
         if (labels[i] === " " && labels[i + 1] === " ") {
           if (segments[i] === "/") {
@@ -199,7 +198,56 @@
           }
         }
       }
+    },
+
+    checkDeclarationScope: (labels, segments, vetted) => {
+      const scopeTree = buildScope(labels, segments, 0, null);
+      console.log(scopeTree);
+      if (scopeTree.end < labels.length - 1) {
+        // Check for extra closing bracket
+        for (let i = scopeTree.end + 1; i < labels.length; i++) {
+          if (segments[i] === "}") {
+            throw new Error("SanitizeJS: scope error");
+          }
+        }
+      }
+
+      // Object.keys(vetted).forEach(variable => {
+
+      // })
     }
+  };
+
+  class Scope {
+    constructor(start, end, parent) {
+      this.start = start;
+      this.end = end;
+      this.parent = parent;
+      this.children = [];
+    }
+  }
+
+  const buildScope = (labels, segments, i, parent) => {
+    const scope = new Scope(i, undefined, parent);
+
+    for (let j = i + 1; j < labels.length; j++) {
+      if (labels[j] === " " && segments[j] === "{") {
+        const childScope = buildScope(labels, segments, j, scope);
+        j = childScope.end;
+        scope.children.push(childScope);
+        continue;
+      } else if (labels[j] === " " && segments[j] === "}") {
+        if (segments[i] !== "{") {
+          throw new Error("SanitizeJS: scope error");
+        }
+        scope.end = j;
+        return scope;
+      }
+    }
+    if (!(scope.parent === null && segments[i] !== "{")) {
+      throw new Error("SanitizeJS: scope error");
+    }
+    return scope;
   };
 
   const parameterCheck = (parameter, location, parameters) => {
