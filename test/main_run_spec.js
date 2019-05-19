@@ -9,7 +9,7 @@ describe("SanitizeJS", function() {
       sjs = new SanitizeJS();
     });
 
-    it("evaluates th string as javascript if it passes vetting", () => {
+    it("evaluates the string as javascript if it passes vetting", () => {
       expect(sjs.run("3 + 4")).toBe(7);
     });
 

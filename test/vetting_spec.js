@@ -573,7 +573,7 @@ describe("vetting", () => {
         expect(vetted["bar"]).toBe(undefined);
       });
 
-      it("throws an error if a word used to initialize and object property is used as an identifier", () => {
+      it("throws an error if a word used to initialize an object property is used as an identifier", () => {
         const segments = [
           "const",
           " ",
