@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>SanitizeJS - statically sanitize javascript</title>
+    <style type="text/css">html,body{font-family:Arial,sans-serif;font-size:1rem;margin:0;padding:0;}body{padding:10px 40px;}h1{margin-bottom:0;}h2{margin-top:0;margin-bottom:0;color:#999;}table{width:100%;margin-top:20px;margin-bottom:20px;table-layout:fixed;}tr.header{background:#ddd;font-weight:bold;border-bottom:none;}td{padding:7px;border-top:none;border-left:1px black solid;border-bottom:1px black solid;border-right:none;word-break:break-all;word-wrap:break-word;}tr.pass td{color:#003b07;background:#86e191;}tr.skip td{color:#7d3a00;background:#ffd24a;}tr.fail td{color:#5e0e00;background:#ff9c8a;}tr:first-child td{border-top:1px black solid;}td:last-child{border-right:1px black solid;}tr.overview{font-weight:bold;color:#777;}tr.overview td{padding-bottom:0px;border-bottom:none;}tr.system-out td{color:#777;}tr.system-errors td{color:#f00;}hr{height:2px;margin:30px 0;background:#000;border:none;}section{margin-top:40px;}h3{margin:6px 0;}.overview{color:#333;font-weight:bold;}.system-out{margin:0.4rem 0;}.system-errors{color:#a94442}.spec{padding:0.8rem;margin:0.3rem 0;}.spec--pass{color:#3c763d;background-color:#dff0d8;border:1px solid #d6e9c6;}.spec--skip{color:#8a6d3b;background-color:#fcf8e3;border:1px solid #faebcc;}.spec--fail{color:#a94442;background-color:#f2dede;border:1px solid #ebccd1;}.spec--group{color:#636363;background-color:#f0f0f0;border:1px solid #e6e6e6;margin:0;}.spec--group:not(:first-of-type){margin:20px 0 0 0;}.spec__title{display:inline;}.spec__suite{display:inline;}.spec__descrip{font-weight:normal;}.spec__status{float:right;}.spec__log{padding-left: 2.3rem;}.hidden{display:none;}body.compact .spec p{margin-top:0;margin-bottom:0.5rem;}body.compact .spec,body.compact tr,body.compact .overview,body.compact .system-out,body.compact .system-errors{font-size:0.85rem;}body.compact .spec{padding:0.3rem 0.5rem;}body.compact section{margin-top:30px;}</style>
+  </head>
+  <body class="compact">
+    <h1>SanitizeJS</h1>
+    <h2>statically sanitize javascript</h2>
+    <table cellspacing="0" cellpadding="0" border="0">
+      <tr class="overview">
+        <td colspan="3" title="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:66.0) Gecko/20100101 Firefox/66.0">Browser: Firefox 66.0.0 (Mac OS X 10.10.0)</td>
+      </tr>
+      <tr class="overview">
+        <td colspan="3">Timestamp: 5/19/2019, 6:58:41 PM</td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          72 tests / 
+          0 errors / 
+          0 failures / 
+          0 skipped / 
+          runtime: 7.922s
+        </td>
+      </tr>
+      <tr class="header">
+        <td>Status</td>
+        <td>Spec</td>
+        <td>Suite / Results</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>will handle a number if it is in final set of characters</td>
+        <td>split &raquo; inNumberStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>will not include more than 1 period ('.') as part of a number</td>
+        <td>split &raquo; inNumberStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.781s</td>
+        <td>will include up to 1 period ('.') as part of a number</td>
+        <td>split &raquo; inNumberStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>returns an array in which digit chars in series are added as one string</td>
+        <td>split &raquo; inNumberStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>adds some non-word, -digit, and -quote char in a string to an array and returns it</td>
+        <td>split &raquo; emptyStacks</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>treats anything within ' ... ' as a single segment</td>
+        <td>split &raquo; inStringStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>handles a string at the end</td>
+        <td>split &raquo; inStringStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>treats anything within " ... " as a single segment</td>
+        <td>split &raquo; inStringStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws an error if there isn't a matching end ' </td>
+        <td>split &raquo; inStringStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>throws an error if there isn't a matching end ' " ' (single quotes on the outside)</td>
+        <td>split &raquo; inStringStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 1.005s</td>
+        <td>treats anything within " ... " as a single segment including '...'</td>
+        <td>split &raquo; inStringStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>throws an error if there isn't a matching end '"' </td>
+        <td>split &raquo; inStringStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>considers digits to be word characters if they are not the first char in a word</td>
+        <td>split &raquo; inWordStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>considers '_' and '$' to be word characters</td>
+        <td>split &raquo; inWordStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>completes word if the final char is part of a word</td>
+        <td>split &raquo; inWordStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>returns an array in which word chars in series are added as one string</td>
+        <td>split &raquo; inWordStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>considers digits to not be word characters if they are the first char in a word</td>
+        <td>split &raquo; inWordStack</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>handles a complex template literal</td>
+        <td>split &raquo; handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 1.001s</td>
+        <td>handles a simple template literal</td>
+        <td>split &raquo; handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>returns an array of labels for the segments array</td>
+        <td>split &raquo; labels</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>throws an error if missing closing ` </td>
+        <td>handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.003s</td>
+        <td>handles `...` with two, simple expressions</td>
+        <td>handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 1.007s</td>
+        <td>handles `...` with one, complex expression</td>
+        <td>handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws an error with nested expressions</td>
+        <td>handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>handles `...` with two, complex expressions</td>
+        <td>handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>handles `...` with one, simple expression</td>
+        <td>handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>treats simple `...` without expressions as one element</td>
+        <td>handleTemplateLiteral</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>can be constructed and used as an object</td>
+        <td>SanitizeJS</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.003s</td>
+        <td>adds words to the default whitelist</td>
+        <td>SanitizeJS &raquo; addToWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>adds a word to the default whitelist</td>
+        <td>SanitizeJS &raquo; addToWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>removes all words from the default whitelist if an array of the whitelist keys is passed in</td>
+        <td>SanitizeJS &raquo; removeFromWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>removes words from the default whitelist</td>
+        <td>SanitizeJS &raquo; removeFromWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>removes a word from the default whitelist</td>
+        <td>SanitizeJS &raquo; removeFromWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>resets whitelist to default</td>
+        <td>SanitizeJS &raquo; resetWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>allows removing a string from the whitelist object</td>
+        <td>vetting &raquo; removeFromWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>allows removing multiple entries with an array of strings</td>
+        <td>vetting &raquo; removeFromWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>throws an error if something other than a string or array is passed as the first argument</td>
+        <td>vetting &raquo; removeFromWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>throws an error if an undeclared word is used that isn't on the whitelist or allowedVariables object or used as a property</td>
+        <td>vetting &raquo; checkWords</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>handles nested property declarations</td>
+        <td>vetting &raquo; checkWords &raquo; objects-and-properties</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>throws an error if a word used to initialize an object property is used as an identifier</td>
+        <td>vetting &raquo; checkWords &raquo; objects-and-properties</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws an error if a property is used as an identifier</td>
+        <td>vetting &raquo; checkWords &raquo; objects-and-properties</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws no error, but also doesn't sign off on a word that is used to initialize a property on an object literal</td>
+        <td>vetting &raquo; checkWords &raquo; objects-and-properties</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 1.003s</td>
+        <td>handles non-space whitespace in object literal declarations</td>
+        <td>vetting &raquo; checkWords &raquo; objects-and-properties</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>handles multiple property declarations</td>
+        <td>vetting &raquo; checkWords &raquo; objects-and-properties</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws no error, but also does not sign off on words used as a property, immediately after a dot operator</td>
+        <td>vetting &raquo; checkWords &raquo; objects-and-properties</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>returns an object containing vetted words checked against a whitelist</td>
+        <td>vetting &raquo; checkWords</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws an error if the string contains a multi-line comment</td>
+        <td>vetting &raquo; checkWords &raquo; comments</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>throws an error if the string contains a single-line comment</td>
+        <td>vetting &raquo; checkWords &raquo; comments</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>vets declared variables/function names as well</td>
+        <td>vetting &raquo; checkWords</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>vets words that are properties of allowedVariables</td>
+        <td>vetting &raquo; checkWords</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 1.006s</td>
+        <td>allows a single parameter passed into an arrow function declaration with parentheses</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>allows a single parameter passed into an arrow function declaration without parentheses</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>throws an error if a parameter is used outside of the block of the function definition</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws an error if the function definition is too short</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>allows for the use of parameters within the block of a function declaration</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws an error if functions are defined without brackets</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>throws an error if function parameters are assigned default values</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>allows multiple parameters to be passed into a function declaration</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>allows a multiple parameters passed into an arrow function declaration with parentheses</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>throws an error if brackets are omitted on the arrow function expression</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 1.005s</td>
+        <td>throws an error if the arrow function expression is too short or if there is some other error</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>allows a single parameter passed into a function declaration</td>
+        <td>vetting &raquo; checkWords &raquo; functions</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>allows words declared as variable identifiers or function names</td>
+        <td>vetting &raquo; checkWords</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>allows adding a string to the whitelist object</td>
+        <td>vetting &raquo; addToWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0s</td>
+        <td>allows adding multiple entries with an array of strings</td>
+        <td>vetting &raquo; addToWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 1.003s</td>
+        <td>throws an error if something other than a string or array is passed as the first argument</td>
+        <td>vetting &raquo; addToWhitelist</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.002s</td>
+        <td>evaluates the string as javascript if it passes vetting</td>
+        <td>SanitizeJS &raquo; run</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.003s</td>
+        <td>throws an error message if variables are not passed in to the allowedVariables object</td>
+        <td>SanitizeJS &raquo; run</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.007s</td>
+        <td>handles multi-line strings with semicolons</td>
+        <td>SanitizeJS &raquo; run</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.003s</td>
+        <td>can read variables passed into an allowedVariables object</td>
+        <td>SanitizeJS &raquo; run</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.001s</td>
+        <td>throws an error message if a keyword is not whitelisted</td>
+        <td>SanitizeJS &raquo; run</td>
+      </tr>
+      <tr class="pass">
+        <td>Passed in 0.004s</td>
+        <td>handles multi-line strings without semicolons</td>
+        <td>SanitizeJS &raquo; run</td>
+      </tr>
+      <tr class="system-out">
+        <td colspan="3"><strong>System output:</strong><br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: Scope{start: -1, end: 5, parent: null, children: [], declarations: []}
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: Scope{start: -1, end: 50, parent: null, children: [], declarations: []}
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: [-9, 41]
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: -9
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: 41
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: [-24, 37]
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: -24
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: 37
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: Scope{start: -1, end: 5, parent: null, children: [], declarations: []}
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: Scope{start: -1, end: 47, parent: null, children: [], declarations: []}
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: [-9, 39]
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: -9
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: 39
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: [-23, 35]
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: -23
+<br />Firefox 66.0.0 (Mac OS X 10.10.0) LOG: 35
+</td>
+      </tr>
+    </table>
+    <hr/>
+  </body>
+</html>

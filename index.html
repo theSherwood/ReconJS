@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="node_modules/codemirror-minified/lib/codemirror.css"
+    />
+    <link rel="stylesheet" href="index.css" />
+    <title>Live Test</title>
+  </head>
+  <body>
+    <div id="root">
+      <h3>Input Text</h3>
+      <textarea id="codemirror-target"></textarea>
+      <button onclick="run()" title="Cmd-Enter">Run</button>
+      <button onclick="runWithPerf(1000)" title="Shift-Cmd-Enter">
+        RunWithPerf
+      </button>
+      <button onclick="vet()" title="Alt-Cmd-Enter">Vet</button><br /><br />
+      <h3>Results</h3>
+      <div id="results"></div>
+    </div>
+
+    <script src="node_modules/codemirror-minified/lib/codemirror.js"></script>
+    <script src="./bundle.js"></script>
+    <script>
+      const target = document.querySelector("#codemirror-target");
+      const editor = CodeMirror.fromTextArea(target, {
+        lineNumbers: true,
+        mode: "javascript",
+        tabSize: 2
+      });
+
+      const resultElmnt = document.querySelector("#results");
+
+      editor.addKeyMap({
+        ["Cmd-Enter"]: function() {
+          run();
+        }
+      });
+      editor.addKeyMap({
+        ["Shift-Cmd-Enter"]: function() {
+          runWithPerf(1000);
+        }
+      });
+      editor.addKeyMap({
+        ["Cmd-Alt-Enter"]: function() {
+          vet(); // not working
+        }
+      });
+
+      const s = new SanitizeJS();
+      const run = () => {
+        resultElmnt.textContent = s.run(editor.getValue());
+      };
+
+      const vet = () => {
+        resultElmnt.textContent = s.vet(editor.getValue()) || "vetted";
+      };
+
+      const runWithPerf = iterations => {
+        // This is not secure. It is a speed test
+        const value = editor.getValue();
+        // Check speed of s.run() on iterations
+        const startRun = Date.now();
+        let results;
+        let count = 0;
+        for (let i = 0; i < iterations; i++) {
+          count++;
+          results = s.run(value);
+        }
+        const elapsedRun = Date.now() - startRun;
+        console.log("!__________!");
+        console.log(count, " iterations");
+        console.log("s.run() :", elapsedRun);
+        resultElmnt.textContent = results;
+        // Check speed of eval() on iterations
+        const startEval = Date.now();
+        const eval2 = eval;
+        for (let j = 0; j < iterations; j++) {
+          results = eval(value);
+        }
+        const elapsedEval = Date.now() - startEval;
+        console.log("eval() :", elapsedEval);
+      };
+    </script>
+  </body>
+</html>
