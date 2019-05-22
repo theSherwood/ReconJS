@@ -2,7 +2,7 @@
   "name": "jslite",
   "version": "1.0.0",
   "description": "statically sanitize javascript",
-  "main": "index.js",
+  "main": "reconBundle.js",
   "scripts": {
     "test": "karma start",
     "run": "karma start karma.main_run.conf.js",
@@ -13,7 +13,9 @@
   "license": "MIT",
   "dependencies": {
     "acorn": "^6.1.1",
-    "acorn-walk": "^6.1.1"
+    "acorn-dynamic-import": "^4.0.0",
+    "acorn-walk": "^6.1.1",
+    "rollup-plugin-node-resolve": "^5.0.0"
   },
   "devDependencies": {
     "browserify": "^16.2.3",
