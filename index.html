@@ -15,9 +15,9 @@
     <div id="root">
       <h3>Input Text</h3>
       <textarea id="codemirror-target"></textarea>
-      <button onclick="run()" title="Cmd-Enter">Run</button>
-      <button onclick="runWithPerf(1000)" title="Shift-Cmd-Enter">
-        RunWithPerf
+      <button onclick="parse()" title="Cmd-Enter">parse</button>
+      <button onclick="getIdentifiers()" title="Shift-Cmd-Enter">
+        get Identifiers
       </button>
       <button onclick="vet()" title="Alt-Cmd-Enter">Vet</button><br /><br />
       <h3>Results</h3>
@@ -25,7 +25,7 @@
     </div>
 
     <script src="node_modules/codemirror-minified/lib/codemirror.js"></script>
-    <script src="./bundle.js"></script>
+    <script src="./reconBundle.js"></script>
     <script>
       const target = document.querySelector("#codemirror-target");
       const editor = CodeMirror.fromTextArea(target, {
@@ -38,12 +38,12 @@
 
       editor.addKeyMap({
         ["Cmd-Enter"]: function() {
-          run();
+          parse();
         }
       });
       editor.addKeyMap({
         ["Shift-Cmd-Enter"]: function() {
-          runWithPerf(1000);
+          getIdentifiers();
         }
       });
       editor.addKeyMap({
@@ -52,39 +52,18 @@
         }
       });
 
-      const s = new SanitizeJS();
-      const run = () => {
-        resultElmnt.textContent = s.run(editor.getValue());
+      console.log(recon);
+      let r = new recon();
+
+      const parse = () => {
+        const result = r.parse(editor.getValue());
+        console.log(result);
+        resultElmnt.textContent = JSON.stringify(result);
       };
 
-      const vet = () => {
-        resultElmnt.textContent = s.vet(editor.getValue()) || "vetted";
-      };
-
-      const runWithPerf = iterations => {
-        // This is not secure. It is a speed test
-        const value = editor.getValue();
-        // Check speed of s.run() on iterations
-        const startRun = Date.now();
-        let results;
-        let count = 0;
-        for (let i = 0; i < iterations; i++) {
-          count++;
-          results = s.run(value);
-        }
-        const elapsedRun = Date.now() - startRun;
-        console.log("!__________!");
-        console.log(count, " iterations");
-        console.log("s.run() :", elapsedRun);
-        resultElmnt.textContent = results;
-        // Check speed of eval() on iterations
-        const startEval = Date.now();
-        const eval2 = eval;
-        for (let j = 0; j < iterations; j++) {
-          results = eval(value);
-        }
-        const elapsedEval = Date.now() - startEval;
-        console.log("eval() :", elapsedEval);
+      const getIdentifiers = () => {
+        const result = r.getIdentifiers(editor.getValue());
+        resultElmnt.textContent = JSON.stringify(result);
       };
     </script>
   </body>
