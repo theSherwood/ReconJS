@@ -1,18 +1,20 @@
-import commonjs from "rollup-plugin-commonjs";
+import resolve from "rollup-plugin-node-resolve";
+// import commonjs from "rollup-plugin-commonjs";
 
 export default {
-  input: "./src/main.js",
+  input: "./src/recon.js",
   output: {
-    name: "SanitizeJS",
-    file: "bundle.js",
+    name: "recon",
+    file: "reconBundle.js",
     format: "iife"
   },
-  watch: {
-    include: "src/**"
-  },
+  // watch: {
+  //   include: "src/**"
+  // },
   plugins: [
-    commonjs({
-      include: "src/**"
-    })
+    resolve()
+    // commonjs({
+    //   include: ["node_modules/**"]
+    // })
   ]
 };
