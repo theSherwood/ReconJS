@@ -14,23 +14,35 @@ class Recon {
     if (typeof str === "string") {
       parse(str);
     }
-    if (!this.ast) return;
-    const ast = buildScopeTree(this.ast, this.recurseAST);
+    if (!this.astArray) return;
+    buildScopeTree(this.astArray, this.traverseASTArray);
     console.log(this.ast);
-    return ast;
+    return this.ast;
+  }
+
+  traverseASTArray(astArray, callback) {
+    for (let i = 0; i < astArray.length; i++) {
+      callback(astArray[i]);
+    }
   }
 
   recurseAST(node, nodeCallback, childCallback) {
     (function recurse(node, nodeCallback, childCallback) {
       nodeCallback && nodeCallback(node);
-      Object.entries(node).forEach(([key, value]) => {
+      Object.values(node).forEach(value => {
         // Iterate over properties on the node, looking for
         // child nodes.
         if (typeof value === "object" && value !== null) {
-          if (!Array.isArray(value)) {
+          if (value.hasOwnProperty("index")) return;
+          if (Array.isArray(value)) {
+            value.forEach(arrayChild => {
+              childCallback && childCallback(arrayChild, node);
+              recurse(arrayChild, nodeCallback, childCallback);
+            });
+          } else {
             childCallback && childCallback(value, node);
+            recurse(value, nodeCallback, childCallback);
           }
-          recurse(value, nodeCallback, childCallback);
         }
       });
     })(node, nodeCallback, childCallback);
@@ -114,39 +126,4 @@ class Recon {
   }
 }
 
-const doNotRecurseProps = ["fscope", "bscope"];
-
 export default Recon;
-
-// debugger;
-// walk.simple(
-//   this.ast,
-//   Object.create(null),
-//   {
-//     default: (node, state, c) => {
-//       count++;
-//       if (count > 20) throw new Error("Stuck in a loop");
-//       console.log(Object.entries(node));
-//       Object.values(node).forEach(value => {
-//         if (typeof value === "object" && value !== "null") {
-//           if (value.type === "Identifier") identifiers.push(value.name);
-//           c(value, state, "default");
-//         }
-//       });
-//     }
-//   },
-//   undefined,
-//   "default"
-// );
-// walk.simple(this.ast, {
-//   Identifier: function(node) {
-//     identifiers.push(node);
-//   }
-// });
-// walk.full(this.ast, (node, state, type) => {
-//   console.log(type);
-// });
-// walk.recursive(this.ast, undefined, undefined, (node, state, c) => {
-//   console.log(node.type);
-//   c(node);
-// });
