@@ -14,21 +14,30 @@
 
 function buildScopeTree(astArray, walker) {
   walker(astArray, node => {
-    const parent = astArray[node.parent];
-    if (parent) {
-      if (parent.functionScope === undefined) console.log("fscope ", parent);
-      node.functionScope = functionScopeNodes.includes(parent.type)
-        ? parent.index
-        : parent.functionScope;
-      if (parent.blockScope === undefined) console.log("bscope ", parent);
-      node.blockScope = blockScopeNodes.includes(parent.type)
-        ? parent.index
-        : parent.blockScope;
-    } else {
-      node.functionScope = node.index;
-      node.blockScope = node.index;
-    }
+    scopeHandler(astArray, node);
+
+    // TODO: params handler ?
+    // The params handler and the variables handler
+    // might need to be done recursively on the tree
+    // rather than iteratively on the array.
   });
+}
+
+function scopeHandler(astArray, node) {
+  const parent = astArray[node.parent];
+  if (parent) {
+    if (parent.functionScope === undefined) console.log("fscope ", parent);
+    node.functionScope = functionScopeNodes.includes(parent.type)
+      ? parent.index
+      : parent.functionScope;
+    if (parent.blockScope === undefined) console.log("bscope ", parent);
+    node.blockScope = blockScopeNodes.includes(parent.type)
+      ? parent.index
+      : parent.blockScope;
+  } else {
+    node.functionScope = node.index;
+    node.blockScope = node.index;
+  }
 }
 
 const functionScopeNodes = [
