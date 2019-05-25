@@ -32,6 +32,7 @@
       const target = document.querySelector("#codemirror-target");
       const editor = CodeMirror.fromTextArea(target, {
         lineNumbers: true,
+        lineWrapping: true,
         mode: "javascript",
         tabSize: 2
       });
