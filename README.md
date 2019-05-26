@@ -1,3 +1,0 @@
-# SanitizeJS
-
-statically sanitize javascript
