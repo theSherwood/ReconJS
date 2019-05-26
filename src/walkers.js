@@ -6,20 +6,25 @@ export function traverseASTArray(astArray, callback) {
 
 export function recurseAST(node, nodeCallback, childCallback, state) {
   (function recurse(node, nodeCallback, childCallback, state) {
-    nodeCallback && nodeCallback(node, state);
+    // Do not use Booleans or anything that evaluates to false as state
+    let newState = nodeCallback ? nodeCallback(node, state) : state;
     Object.values(node).forEach(value => {
       // Iterate over properties on the node, looking for
       // child nodes.
       if (typeof value === "object" && value !== null) {
-        if (value.hasOwnProperty("index")) return;
+        // if (value.hasOwnProperty("index")) console.log(value);
         if (Array.isArray(value)) {
           value.forEach(arrayChild => {
-            childCallback && childCallback(arrayChild, node, state);
-            recurse(arrayChild, nodeCallback, childCallback);
+            newState = childCallback
+              ? childCallback(arrayChild, node, newState)
+              : newState;
+            recurse(arrayChild, nodeCallback, childCallback, newState);
           });
         } else {
-          childCallback && childCallback(value, node, state);
-          recurse(value, nodeCallback, childCallback, state);
+          newState = childCallback
+            ? childCallback(value, node, newState)
+            : newState;
+          recurse(value, nodeCallback, childCallback, newState);
         }
       }
     });
