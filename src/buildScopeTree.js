@@ -1,5 +1,5 @@
 /*
-  Adds up to three properties on a node:
+  Adds up to 3 properties on a node:
     1. functionScope: (required)
         the index of the node providing 
         function scope
@@ -9,11 +9,14 @@
     3. scopedParams: (optional)
         array of identifiers safe to use within
         a scope on account of being parameters
+
+    TODO: declarations
 */
 function buildScopeTree(astArray, walker) {
   walker(astArray, node => {
     scopeHandler(astArray, node);
     paramsHandler(node);
+    declarationsHandler(astArray, node);
   });
 }
 
@@ -68,6 +71,68 @@ function paramsHandler(node) {
   }
 }
 
+/*
+  Find all declarations and push the declared identifiers 
+  to an array that's a property on the nodes that creates
+  the scope.
+*/
+function declarationsHandler(astArray, node) {
+  switch (node.type) {
+    case "FunctionDeclaration":
+      addAsValue(
+        astArray[node.functionScope],
+        "declaredIdentifiers",
+        node.id.name
+      );
+      break;
+    case "ClassDeclaration":
+      addAsValue(
+        astArray[node.functionScope],
+        "declaredIdentifiers",
+        node.id.name
+      );
+      break;
+    case "VariableDeclaration":
+      handleVariableDeclaration(astArray, node);
+      break;
+    // TODO: modules: import and export
+    // TODO: labeled statements
+    default:
+      break;
+  }
+}
+
+function handleVariableDeclaration(astArray, node) {
+  // differentiate between block and function scope
+  let scopeNode;
+  if (node.kind === "const" || node.kind === "let") {
+    scopeNode = astArray[node.blockScope];
+  } else if (node.kind === "var") {
+    scopeNode = astArray[node.functionScope];
+  }
+  if (scopeNode) {
+    node.declarations.forEach(declaration => {
+      if (declaration.type === "VariableDeclarator") {
+        addAsValue(scopeNode, "declaredIdentifiers", declaration.id.name);
+      }
+    });
+  }
+}
+
+/*
+  If the object has a property of propertyName, push value 
+  onto the end of that array. If not, initialize propertyName
+  as an array property of the object with value as its first
+  value.
+*/
+function addAsValue(object, propertyName, value) {
+  if (!(object.hasOwnProperty(propertyName) && Array.isArray(undefined))) {
+    object[propertyName] = [value];
+  } else {
+    object[propertyName].push(value);
+  }
+}
+
 const functionScopeNodes = [
   "Program",
   "ClassDeclaration",
@@ -83,6 +148,17 @@ const blockScopeNodes = [
   "ForOfStatement",
   "SwitchStatement",
   "CatchClause"
+];
+
+const declarationTypes = [
+  "VariableDeclaration",
+  "FunctionDeclaration",
+  "ClassDeclaration",
+
+  // TODO:  module vs import vs export ?
+  "ModuleDeclaration",
+  "ImportDeclaration"
+  // TODO: LabeledStatement ?
 ];
 
 export default buildScopeTree;
