@@ -12,9 +12,13 @@ class Recon {
     // this.getIdentifiers = this.getIdentifiers.bind(this);
   }
 
-  getScopeTree(str) {
+  check(ast) {
+    checkIdentifiers();
+  }
+
+  getScopeTree(str, options) {
     if (typeof str === "string") {
-      parse(str);
+      this.parse(str, options);
     }
     if (!this.astArray) return;
     buildScopeTree(this.astArray, traverseASTArray);

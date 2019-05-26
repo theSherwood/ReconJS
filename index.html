@@ -16,8 +16,8 @@
       <h3>Input Text</h3>
       <textarea id="codemirror-target"></textarea>
       <button onclick="parse()" title="Cmd-Enter">parse</button>
-      <button onclick="getIdentifiers()" title="Shift-Cmd-Enter">
-        get Identifiers
+      <button onclick="check()" title="Shift-Cmd-Enter">
+        check
       </button>
       <button onclick="getScopeTree()" title="Alt-Cmd-Enter">
         get Scope Tree</button
@@ -65,13 +65,15 @@
         resultElmnt.textContent = JSON.stringify(result);
       };
 
-      const getIdentifiers = () => {
-        const result = r.getIdentifiers(editor.getValue());
+      const check = () => {
+        const result = r.check(editor.getValue(), { sourceType: "module" });
         resultElmnt.textContent = JSON.stringify(result);
       };
 
       const getScopeTree = () => {
-        const result = r.getScopeTree(editor.getValue());
+        const result = r.getScopeTree(editor.getValue(), {
+          sourceType: "module"
+        });
         resultElmnt.textContent = JSON.stringify(result);
       };
     </script>
