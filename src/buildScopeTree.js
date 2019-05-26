@@ -126,7 +126,11 @@ function handleVariableDeclaration(astArray, node) {
   value.
 */
 function addAsValue(object, propertyName, value) {
-  if (!(object.hasOwnProperty(propertyName) && Array.isArray(undefined))) {
+  if (
+    !(
+      object.hasOwnProperty(propertyName) && Array.isArray(object[propertyName])
+    )
+  ) {
     object[propertyName] = [value];
   } else {
     object[propertyName].push(value);
