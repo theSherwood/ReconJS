@@ -1,5 +1,14 @@
 /*
-
+  Adds up to three properties on a node:
+    1. functionScope: (required)
+        the index of the node providing 
+        function scope
+    2. blockScope: (required)
+        the index of the node providing
+        block scope
+    3. scopedParams: (optional)
+        array of identifiers safe to use within
+        a scope on account of being parameters
 */
 function buildScopeTree(astArray, walker) {
   walker(astArray, node => {
@@ -16,7 +25,7 @@ function buildScopeTree(astArray, walker) {
     For any node x, functionScope and blockScope property 
     values are the index of the ancestor node in the array 
     that creates that scope for the node in question.
-  */
+*/
 function scopeHandler(astArray, node) {
   const parent = astArray[node.parent];
   if (parent) {
@@ -24,7 +33,7 @@ function scopeHandler(astArray, node) {
       ? parent.index
       : parent.functionScope;
 
-    // blockScope must be at least as specific as functionScope
+    // blockScope must be at least as specific as functionScope (it cannot be a lower number)
     node.blockScope = Math.max(
       blockScopeNodes.includes(parent.type) ? parent.index : parent.blockScope,
       node.functionScope
