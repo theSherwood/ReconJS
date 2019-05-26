@@ -26,9 +26,9 @@ class Recon {
     }
   }
 
-  recurseAST(node, nodeCallback, childCallback) {
-    (function recurse(node, nodeCallback, childCallback) {
-      nodeCallback && nodeCallback(node);
+  recurseAST(node, nodeCallback, childCallback, state) {
+    (function recurse(node, nodeCallback, childCallback, state) {
+      nodeCallback && nodeCallback(node, state);
       Object.values(node).forEach(value => {
         // Iterate over properties on the node, looking for
         // child nodes.
@@ -36,16 +36,16 @@ class Recon {
           if (value.hasOwnProperty("index")) return;
           if (Array.isArray(value)) {
             value.forEach(arrayChild => {
-              childCallback && childCallback(arrayChild, node);
+              childCallback && childCallback(arrayChild, node, state);
               recurse(arrayChild, nodeCallback, childCallback);
             });
           } else {
-            childCallback && childCallback(value, node);
-            recurse(value, nodeCallback, childCallback);
+            childCallback && childCallback(value, node, state);
+            recurse(value, nodeCallback, childCallback, state);
           }
         }
       });
-    })(node, nodeCallback, childCallback);
+    })(node, nodeCallback, childCallback, state);
   }
 
   getIdentifiers(str) {
@@ -97,8 +97,8 @@ class Recon {
     }
   }
 
-  parse(string) {
-    this.ast = acorn.parse(string);
+  parse(string, options) {
+    this.ast = acorn.parse(string, options);
     // console.log(ast);
     this.buildASTArray(this.ast);
     return this.ast;
