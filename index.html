@@ -58,7 +58,9 @@
       let r = new recon();
 
       const parse = () => {
-        const result = r.parse(editor.getValue());
+        const result = r.parse(editor.getValue(), {
+          sourceType: "module"
+        });
         console.log(result);
         resultElmnt.textContent = JSON.stringify(result);
       };
