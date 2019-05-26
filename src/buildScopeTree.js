@@ -32,8 +32,9 @@ function buildScopeTree(astArray, walker) {
 function scopeHandler(astArray, node) {
   const parent = astArray[node.parent];
   if (parent) {
+    // find functionScope
     node.functionScope = functionScopeNodes.includes(parent.type)
-      ? parent.index
+      ? node.index
       : parent.functionScope;
 
     // blockScope must be at least as specific as functionScope (it cannot be a lower number)
@@ -138,7 +139,6 @@ function addAsValue(object, propertyName, value) {
 }
 
 const functionScopeNodes = [
-  "Program",
   "ClassDeclaration",
   "FunctionDeclaration",
   "FunctionExpression",
