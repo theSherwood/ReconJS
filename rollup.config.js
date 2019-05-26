@@ -8,9 +8,9 @@ export default {
     file: "reconBundle.js",
     format: "iife"
   },
-  // watch: {
-  //   include: "src/**"
-  // },
+  watch: {
+    include: "src/**"
+  },
   plugins: [
     resolve()
     // commonjs({
