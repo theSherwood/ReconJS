@@ -93,6 +93,10 @@ function handleDestructuredArray(arrayPattern, callback) {
   arrayPattern.elements.forEach(element => {
     if (element.type === "Identifier") {
       callback(element.name);
+    } else if (element.type === "RestElement") {
+      if (element.argument.type === "Identifier") {
+        callback(element.argument.name);
+      }
     }
   });
 }
