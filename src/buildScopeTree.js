@@ -1,5 +1,5 @@
 /*
-  Adds up to 3 properties on a node:
+  Adds up to 4 properties on a node:
     1. functionScope: (required)
         the index of the node providing 
         function scope
@@ -9,8 +9,9 @@
     3. scopedParams: (optional)
         array of identifiers safe to use within
         a scope on account of being parameters
-
-    TODO: declarations
+    4. declaredIdentifiers: (optional)
+        array of identifiers declared within
+        that scope
 */
 function buildScopeTree(astArray, walker) {
   walker(astArray, node => {
@@ -104,8 +105,6 @@ function declarationsHandler(astArray, node) {
     case "VariableDeclaration":
       handleVariableDeclaration(astArray, node);
       break;
-    // TODO: modules: import and export
-    // TODO: labeled statements
     default:
       break;
   }
@@ -160,17 +159,6 @@ const blockScopeNodes = [
   "ForOfStatement",
   "SwitchStatement",
   "CatchClause"
-];
-
-const declarationTypes = [
-  "VariableDeclaration",
-  "FunctionDeclaration",
-  "ClassDeclaration",
-
-  // TODO:  module vs import vs export ?
-  "ModuleDeclaration",
-  "ImportDeclaration"
-  // TODO: LabeledStatement ?
 ];
 
 export default buildScopeTree;
