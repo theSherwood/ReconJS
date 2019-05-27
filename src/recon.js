@@ -12,7 +12,7 @@ class Recon {
     // this.getIdentifiers = this.getIdentifiers.bind(this);
   }
 
-  check(str, variables, options) {
+  check(str, options, variables) {
     if (typeof str === "string") {
       this.getScopeTree(str, options);
     }
