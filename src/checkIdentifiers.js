@@ -23,6 +23,10 @@ function checkIdentifiers(astArray, walker, whitelist, variables) {
         if (illicit && parent.key === node) illicit = false;
         // Check if used as a property
         if (illicit && parent.property === node) illicit = false;
+        // Check if used as aliased import ('foo' in 'foo as bar')
+        if (illicit && parent.imported === node) illicit = false;
+        // Check if used as export alias ('bar' in 'foo as bar')
+        if (illicit && parent.exported === node) illicit = false;
 
         if (illicit) {
           console.log(node.name);
@@ -30,8 +34,6 @@ function checkIdentifiers(astArray, walker, whitelist, variables) {
         }
       }
 
-      // console.log("index: ", node.index);
-      // console.log("state: ", node, identifiersInScope);
       return identifiersInScope;
     },
     undefined
@@ -50,12 +52,6 @@ function buildIdentifierSet(node, state) {
   // Add ancestor scope identifiers, if any
   if (state && state.toString() === "[object Set]") {
     state.forEach(identifier => {
-      identifiersInScope.add(identifier);
-    });
-  }
-  // Add declaredIdentifiers, if any
-  if (node.declaredIdentifiers) {
-    node.declaredIdentifiers.forEach(identifier => {
       identifiersInScope.add(identifier);
     });
   }
