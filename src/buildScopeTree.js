@@ -75,7 +75,7 @@ function paramsHandler(node) {
 
 /*
   Find all declarations and push the declared identifiers 
-  to an array that's a property on the nodes that creates
+  to an array that's a property on the node that creates
   the scope.
 */
 function declarationsHandler(astArray, node) {
