@@ -84,5 +84,11 @@ export default [
   "Promise",
   "async",
   "await",
-  "AsyncFunction"
+  "AsyncFunction",
+  "SyntaxError",
+  "TypeError",
+  "ReferenceError",
+  "InternalError",
+  "RangeError",
+  "URIError"
 ];
