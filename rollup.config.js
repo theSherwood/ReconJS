@@ -1,5 +1,4 @@
 import resolve from "rollup-plugin-node-resolve";
-// import commonjs from "rollup-plugin-commonjs";
 
 export default {
   input: "./src/recon.js",
@@ -11,10 +10,5 @@ export default {
   watch: {
     include: "src/**"
   },
-  plugins: [
-    resolve()
-    // commonjs({
-    //   include: ["node_modules/**"]
-    // })
-  ]
+  plugins: [resolve()]
 };
