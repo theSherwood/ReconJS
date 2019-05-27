@@ -1,19 +1,41 @@
-function checkIdentifiers(ast, walker) {
+function checkIdentifiers(astArray, walker, whitelist, variables) {
+  variables = Array.isArray(variables) ? new Set(variables) : new Set();
   const illicitIdentifiers = [];
   walker(
-    ast,
+    astArray[0],
     (node, state) => {
-      // Return is the node is not a real node:
+      // Return if the node is not a real node:
       // (scopedParams or declaredIdentifiers)
       if (node.index === undefined) return;
 
       const identifiersInScope = buildIdentifierSet(node, state);
-      console.log("index: ", node.index);
-      console.log("state: ", node, identifiersInScope);
+
+      if (node.type === "Identifier") {
+        let illicit = true;
+        // Check against identifiersInScope
+        if (identifiersInScope.has(node.name)) illicit = false;
+        // Check against whitelist
+        if (illicit && whitelist.hasOwnProperty(node.name)) illicit = false;
+        // Check against outside variables
+        if (illicit && variables.has(node.name)) illicit = false;
+        // Check if used as a key on an object or class
+        if (illicit && astArray[node.parent].key === node) illicit = false;
+        // Check if used as a property
+        if (illicit && astArray[node.parent].property === node) illicit = false;
+
+        if (illicit) {
+          console.log(node.name);
+          illicitIdentifiers.push(node);
+        }
+      }
+
+      // console.log("index: ", node.index);
+      // console.log("state: ", node, identifiersInScope);
       return identifiersInScope;
     },
     undefined
   );
+  console.log(illicitIdentifiers);
 }
 
 /*
