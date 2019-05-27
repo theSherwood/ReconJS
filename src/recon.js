@@ -12,12 +12,12 @@ class Recon {
     // this.getIdentifiers = this.getIdentifiers.bind(this);
   }
 
-  check(str, options) {
+  check(str, variables, options) {
     if (typeof str === "string") {
       this.getScopeTree(str, options);
     }
     if (!this.astArray) return;
-    checkIdentifiers(this.ast, recurseAST);
+    checkIdentifiers(this.astArray, recurseAST, this.whitelist, variables);
   }
 
   getScopeTree(str, options) {
@@ -79,8 +79,20 @@ class Recon {
     ast.parent = null;
     let index = 1;
     recurseAST(ast, undefined, (child, node) => {
-      // if (child === "null") console.log("parent of null: ", node);
-      // console.log("child ", child, node);
+      if (child.hasOwnProperty("index")) {
+        /*
+          Clone the child if already visited. 
+          ```
+          const obj = { prop } 
+          ```
+          for example, will create one node for prop,
+          but reference it from the parent on both
+          the 'key' and 'value' properties. Clone the
+          key so that the value node has a different 
+          index.
+        */
+        child = { ...this.astArray[child.index] };
+      }
       child.parent = node.index;
       child.index = index;
       index++;
