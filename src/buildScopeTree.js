@@ -138,7 +138,17 @@ function handleVariableDeclaration(astArray, node) {
   if (scopeNode) {
     node.declarations.forEach(declaration => {
       if (declaration.type === "VariableDeclarator") {
-        addAsValue(scopeNode, "declaredIdentifiers", declaration.id.name);
+        if (declaration.id.type === "Identifier") {
+          // Simple variable declaration
+          addAsValue(scopeNode, "declaredIdentifiers", declaration.id.name);
+        } else if (declaration.id.type === "ArrayPattern") {
+          // Array desctructuring declaration
+          declaration.id.elements.forEach(element => {
+            if (element.type === "Identifier") {
+              addAsValue(scopeNode, "declaredIdentifiers", element.name);
+            }
+          });
+        }
       }
     });
   }
