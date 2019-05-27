@@ -142,16 +142,29 @@ function handleVariableDeclaration(astArray, node) {
           // Simple variable declaration
           addAsValue(scopeNode, "declaredIdentifiers", declaration.id.name);
         } else if (declaration.id.type === "ArrayPattern") {
-          // Array desctructuring declaration
-          declaration.id.elements.forEach(element => {
-            if (element.type === "Identifier") {
-              addAsValue(scopeNode, "declaredIdentifiers", element.name);
-            }
-          });
+          declareDestructuredArray(declaration.id, scopeNode);
+        } else if (declaration.id.type === "ObjectPattern") {
+          declareDestructuredObject(declaration.id, scopeNode);
         }
       }
     });
   }
+}
+
+function declareDestructuredArray(arrayPattern, scopeNode) {
+  arrayPattern.elements.forEach(element => {
+    if (element.type === "Identifier") {
+      addAsValue(scopeNode, "declaredIdentifiers", element.name);
+    }
+  });
+}
+
+function declareDestructuredObject(objectPattern, scopeNode) {
+  objectPattern.properties.forEach(property => {
+    if (property.value.type === "Identifier") {
+      addAsValue(scopeNode, "declaredIdentifiers", property.value.name);
+    }
+  });
 }
 
 /*
