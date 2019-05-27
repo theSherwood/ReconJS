@@ -27,6 +27,8 @@ function checkIdentifiers(astArray, walker, whitelist, variables) {
         if (illicit && parent.imported === node) illicit = false;
         // Check if used as export alias ('bar' in 'foo as bar')
         if (illicit && parent.exported === node) illicit = false;
+        // Check if used as a label
+        if (illicit && parent.label === node) illicit = false;
 
         if (illicit) {
           console.log(node.name);
