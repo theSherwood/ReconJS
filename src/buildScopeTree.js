@@ -59,17 +59,25 @@ function paramsHandler(node) {
   const scopedParams = [];
   // Get params from functions
   if (node.hasOwnProperty("params")) {
-    const params = node.params;
-    for (let i = 0; i < params.length; i++) {
-      const param = params[i];
+    node.params.forEach(param => {
       if (param.type === "Identifier") {
         scopedParams.push(param.name);
       } else if (param.type === "AssignmentPattern") {
         if (param.left.type === "Identifier") {
           scopedParams.push(param.left.name);
         }
+      } else if (param.type === "ArrayPattern") {
+        handleDestructuredArray(param, name => {
+          scopedParams.push(name);
+        });
+        // paramDestructuredArray(param, scopedParams);
+      } else if (param.type === "ObjectPattern") {
+        handleDestructuredObject(param, name => {
+          scopedParams.push(name);
+        });
+        // paramDestructuredObject(param, scopedParams);
       }
-    }
+    });
   }
   // Get param from catch block
   if (node.hasOwnProperty("param")) {
@@ -79,6 +87,22 @@ function paramsHandler(node) {
   if (scopedParams.length) {
     node.scopedParams = scopedParams;
   }
+}
+
+function handleDestructuredArray(arrayPattern, callback) {
+  arrayPattern.elements.forEach(element => {
+    if (element.type === "Identifier") {
+      callback(element.name);
+    }
+  });
+}
+
+function handleDestructuredObject(objectPattern, callback) {
+  objectPattern.properties.forEach(property => {
+    if (property.value.type === "Identifier") {
+      callback(property.value.name);
+    }
+  });
 }
 
 /*
@@ -142,29 +166,17 @@ function handleVariableDeclaration(astArray, node) {
           // Simple variable declaration
           addAsValue(scopeNode, "declaredIdentifiers", declaration.id.name);
         } else if (declaration.id.type === "ArrayPattern") {
-          declareDestructuredArray(declaration.id, scopeNode);
+          handleDestructuredArray(declaration.id, name => {
+            addAsValue(scopeNode, "declaredIdentifiers", name);
+          });
         } else if (declaration.id.type === "ObjectPattern") {
-          declareDestructuredObject(declaration.id, scopeNode);
+          handleDestructuredObject(declaration.id, name => {
+            addAsValue(scopeNode, "declaredIdentifiers", name);
+          });
         }
       }
     });
   }
-}
-
-function declareDestructuredArray(arrayPattern, scopeNode) {
-  arrayPattern.elements.forEach(element => {
-    if (element.type === "Identifier") {
-      addAsValue(scopeNode, "declaredIdentifiers", element.name);
-    }
-  });
-}
-
-function declareDestructuredObject(objectPattern, scopeNode) {
-  objectPattern.properties.forEach(property => {
-    if (property.value.type === "Identifier") {
-      addAsValue(scopeNode, "declaredIdentifiers", property.value.name);
-    }
-  });
 }
 
 /*
