@@ -1,8 +1,8 @@
-function checkIdentifiers(astArray, walker, whitelist, allowedIdentifiers) {
+function checkWords(astArray, walker, whitelist, allowedIdentifiers, options) {
   allowedIdentifiers = Array.isArray(allowedIdentifiers)
     ? new Set(allowedIdentifiers)
     : new Set();
-  const illicitIdentifiers = [];
+  const illicitWords = [];
   walker(
     astArray[0],
     (node, state) => {
@@ -10,14 +10,14 @@ function checkIdentifiers(astArray, walker, whitelist, allowedIdentifiers) {
       // (scopedParams or declaredIdentifiers)
       if (node.index === undefined) return;
 
-      const identifiersInScope = buildIdentifierSet(node, state);
+      const scopedIdentifiers = buildIdentifierSet(node, state);
 
+      // Check identifiers against permitted usage
       if (node.type === "Identifier") {
-        // Check the identifier against permitted usage
         let illicit = true;
         const parent = astArray[node.parent];
         // Check against identifiersInScope
-        if (illicit && identifiersInScope.has(node.name)) illicit = false;
+        if (illicit && scopedIdentifiers.has(node.name)) illicit = false;
         // Check against whitelist
         if (illicit && whitelist.hasOwnProperty(node.name)) illicit = false;
         // Check against outside allowedIdentifiers
@@ -35,15 +35,20 @@ function checkIdentifiers(astArray, walker, whitelist, allowedIdentifiers) {
 
         if (illicit) {
           console.log(node.name);
-          illicitIdentifiers.push(node);
+          illicitWords.push(node);
         }
       }
 
-      return identifiersInScope;
+      // Check for 'this' keyword
+      if (node.type === "ThisExpression" && options.allowThis !== true) {
+        illicitWords.push(node);
+      }
+
+      return scopedIdentifiers;
     },
     undefined
   );
-  return illicitIdentifiers;
+  return illicitWords;
 }
 
 /*
@@ -53,26 +58,26 @@ function checkIdentifiers(astArray, walker, whitelist, allowedIdentifiers) {
   scopes.
 */
 function buildIdentifierSet(node, state) {
-  const identifiersInScope = new Set();
+  const scopedIdentifiers = new Set();
   // Add ancestor scope identifiers, if any
   if (state && state.toString() === "[object Set]") {
     state.forEach(identifier => {
-      identifiersInScope.add(identifier);
+      scopedIdentifiers.add(identifier);
     });
   }
   // Add declaredIdentifiers, if any
   if (node.declaredIdentifiers) {
     node.declaredIdentifiers.forEach(identifier => {
-      identifiersInScope.add(identifier);
+      scopedIdentifiers.add(identifier);
     });
   }
   // Add scopedParams, if any
   if (node.scopedParams) {
     node.scopedParams.forEach(identifier => {
-      identifiersInScope.add(identifier);
+      scopedIdentifiers.add(identifier);
     });
   }
-  return identifiersInScope;
+  return scopedIdentifiers;
 }
 
-export default checkIdentifiers;
+export default checkWords;
