@@ -6,7 +6,7 @@ import { recurseAST, traverseASTArray } from "./walkers";
 
 class Recon {
   constructor() {
-    this.resetWhitelistObject();
+    this.resetWhitelist();
   }
 
   check(str, options, allowedIdentifiers) {
@@ -35,21 +35,17 @@ class Recon {
     return this.ast;
   }
 
-  resetWhitelistObject() {
-    const whitelistObj = {};
-    whitelist.forEach(word => {
-      whitelistObj[word] = 1;
-    });
-    this.whitelist = whitelistObj;
+  resetWhitelist() {
+    this.whitelist = new Set(whitelist);
   }
 
   removeFromWhitelist(arg) {
     if (Array.isArray(arg)) {
       arg.forEach(word => {
-        delete this.whitelist[word];
+        this.whitelist.delete(word);
       });
     } else if (typeof arg === "string") {
-      delete this.whitelist[arg];
+      this.whitelist.delete(arg);
     } else {
       throw new Error(
         "ReconJS: removeFromWhitelist only accepts a string or an array of strings as an argument"
@@ -60,10 +56,10 @@ class Recon {
   addToWhitelist(arg) {
     if (Array.isArray(arg)) {
       arg.forEach(word => {
-        this.whitelist[word] = 1;
+        this.whitelist.add(word);
       });
     } else if (typeof arg === "string") {
-      this.whitelist[arg] = 1;
+      this.whitelist.add(arg);
     } else {
       throw new Error(
         "ReconJS: addToWhitelist only accepts a string or an array of strings as an argument"

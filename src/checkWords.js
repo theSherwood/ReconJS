@@ -19,7 +19,7 @@ function checkWords(astArray, walker, whitelist, allowedIdentifiers, options) {
         // Check against identifiersInScope
         if (illicit && scopedIdentifiers.has(node.name)) illicit = false;
         // Check against whitelist
-        if (illicit && whitelist.hasOwnProperty(node.name)) illicit = false;
+        if (illicit && whitelist.has(node.name)) illicit = false;
         // Check against outside allowedIdentifiers
         if (illicit && allowedIdentifiers.has(node.name)) illicit = false;
         // Check if used as a key on an object or class
