@@ -1,4 +1,4 @@
-import * as acorn from "acorn";
+import { parse } from "acorn";
 import whitelist from "./whitelist";
 import buildScopeTree from "./buildScopeTree";
 import checkWords from "./checkWords";
@@ -68,7 +68,7 @@ class Recon {
   }
 
   parse(string, options) {
-    this.ast = acorn.parse(string, options);
+    this.ast = parse(string, options);
     this.buildASTArray(this.ast);
     return this.ast;
   }
