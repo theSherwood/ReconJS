@@ -21,13 +21,13 @@ function buildScopeTree(astArray, walker) {
 }
 
 /* 
-    The astArray is a tree structure flattened into an array.
-    For any node x, the nodes in the subtree of x must all
-    have higher indices than the index of x.
+  The astArray is a tree structure flattened into an array.
+  For any node x, the nodes in the subtree of x must all
+  have higher indices than the index of x.
 
-    For any node x, functionScope and blockScope property 
-    values are the index of the ancestor node in the array 
-    that creates that scope for the node in question.
+  For any node x, functionScope and blockScope property 
+  values are the index of the ancestor node in the array 
+  that creates that scope for the node in question.
 */
 function scopeHandler(astArray, node) {
   const parent = astArray[node.parent];
@@ -49,11 +49,11 @@ function scopeHandler(astArray, node) {
 }
 
 /*
-    The ast already contains a params object on function
-    nodes. However, not all identifiers within that object
-    need to be cleared for use within the function. For
-    example: the left side identifier of an AssignmentPattern is free to use inside the function. Such params will be added to an array called scopedParams. The right side, however, may pose a security threat.
-  */
+  The ast already contains a params object on function
+  nodes. However, not all identifiers within that object
+  need to be cleared for use within the function. For
+  example: the left side identifier of an AssignmentPattern is free to use inside the function. Such params will be added to an array called scopedParams. The right side, however, may pose a security threat.
+*/
 function paramsHandler(node) {
   if (node.hasOwnProperty("params")) {
     const params = node.params;
@@ -93,6 +93,14 @@ function declarationsHandler(astArray, node) {
         node.id.name
       );
       break;
+    case "ImportDeclaration":
+      node.specifiers.forEach(specifier => {
+        addAsValue(
+          astArray[node.functionScope],
+          "declaredIdentifiers",
+          specifier.local.name
+        );
+      });
     case "VariableDeclaration":
       handleVariableDeclaration(astArray, node);
       break;
