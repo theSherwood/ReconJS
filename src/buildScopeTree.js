@@ -56,9 +56,10 @@ function scopeHandler(astArray, node) {
   example: the left side identifier of an AssignmentPattern is free to use inside the function. Such params will be added to an array called scopedParams. The right side, however, may pose a security threat.
 */
 function paramsHandler(node) {
+  const scopedParams = [];
+  // Get params from functions
   if (node.hasOwnProperty("params")) {
     const params = node.params;
-    const scopedParams = [];
     for (let i = 0; i < params.length; i++) {
       const param = params[i];
       if (param.type === "Identifier") {
@@ -69,6 +70,13 @@ function paramsHandler(node) {
         }
       }
     }
+  }
+  // Get param from catch block
+  if (node.hasOwnProperty("param")) {
+    scopedParams.push(node.param.name);
+  }
+
+  if (scopedParams.length) {
     node.scopedParams = scopedParams;
   }
 }
@@ -86,6 +94,15 @@ function declarationsHandler(astArray, node) {
         "declaredIdentifiers",
         node.id.name
       );
+      break;
+    case "FunctionExpression":
+      if (node.id) {
+        addAsValue(
+          astArray[node.functionScope],
+          "declaredIdentifiers",
+          node.id.name
+        );
+      }
       break;
     case "ClassDeclaration":
       addAsValue(
