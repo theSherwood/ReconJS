@@ -1,5 +1,4 @@
 import * as acorn from "acorn";
-// import * as walk from "acorn-walk";
 import whitelist from "./whitelist";
 import buildScopeTree from "./buildScopeTree";
 import checkIdentifiers from "./checkIdentifiers";
@@ -8,16 +7,21 @@ import { recurseAST, traverseASTArray } from "./walkers";
 class Recon {
   constructor() {
     this.resetWhitelistObject();
-
-    // this.getIdentifiers = this.getIdentifiers.bind(this);
   }
 
-  check(str, options, variables) {
+  check(str, options, allowedIdentifiers) {
     if (typeof str === "string") {
       this.getScopeTree(str, options);
     }
     if (!this.astArray) return;
-    checkIdentifiers(this.astArray, recurseAST, this.whitelist, variables);
+    const illicitIdentifiers = checkIdentifiers(
+      this.astArray,
+      recurseAST,
+      this.whitelist,
+      allowedIdentifiers
+    );
+    console.log(illicitIdentifiers);
+    return illicitIdentifiers;
   }
 
   getScopeTree(str, options) {
@@ -68,11 +72,15 @@ class Recon {
 
   parse(string, options) {
     this.ast = acorn.parse(string, options);
-    // console.log(ast);
     this.buildASTArray(this.ast);
     return this.ast;
   }
 
+  /*
+    Build an array of the ast with each node holding
+    the index of the parent in a property called 'parent'.
+    This makes backtracking comparatively low cost.
+  */
   buildASTArray(ast) {
     this.astArray = [ast];
     ast.index = 0;

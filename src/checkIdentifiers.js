@@ -1,5 +1,7 @@
-function checkIdentifiers(astArray, walker, whitelist, variables) {
-  variables = Array.isArray(variables) ? new Set(variables) : new Set();
+function checkIdentifiers(astArray, walker, whitelist, allowedIdentifiers) {
+  allowedIdentifiers = Array.isArray(allowedIdentifiers)
+    ? new Set(allowedIdentifiers)
+    : new Set();
   const illicitIdentifiers = [];
   walker(
     astArray[0],
@@ -11,14 +13,15 @@ function checkIdentifiers(astArray, walker, whitelist, variables) {
       const identifiersInScope = buildIdentifierSet(node, state);
 
       if (node.type === "Identifier") {
+        // Check the identifier against permitted usage
         let illicit = true;
         const parent = astArray[node.parent];
         // Check against identifiersInScope
-        if (identifiersInScope.has(node.name)) illicit = false;
+        if (illicit && identifiersInScope.has(node.name)) illicit = false;
         // Check against whitelist
         if (illicit && whitelist.hasOwnProperty(node.name)) illicit = false;
-        // Check against outside variables
-        if (illicit && variables.has(node.name)) illicit = false;
+        // Check against outside allowedIdentifiers
+        if (illicit && allowedIdentifiers.has(node.name)) illicit = false;
         // Check if used as a key on an object or class
         if (illicit && parent.key === node) illicit = false;
         // Check if used as a property
@@ -40,7 +43,7 @@ function checkIdentifiers(astArray, walker, whitelist, variables) {
     },
     undefined
   );
-  console.log(illicitIdentifiers);
+  return illicitIdentifiers;
 }
 
 /*
