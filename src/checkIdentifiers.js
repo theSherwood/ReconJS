@@ -12,6 +12,7 @@ function checkIdentifiers(astArray, walker, whitelist, variables) {
 
       if (node.type === "Identifier") {
         let illicit = true;
+        const parent = astArray[node.parent];
         // Check against identifiersInScope
         if (identifiersInScope.has(node.name)) illicit = false;
         // Check against whitelist
@@ -19,9 +20,9 @@ function checkIdentifiers(astArray, walker, whitelist, variables) {
         // Check against outside variables
         if (illicit && variables.has(node.name)) illicit = false;
         // Check if used as a key on an object or class
-        if (illicit && astArray[node.parent].key === node) illicit = false;
+        if (illicit && parent.key === node) illicit = false;
         // Check if used as a property
-        if (illicit && astArray[node.parent].property === node) illicit = false;
+        if (illicit && parent.property === node) illicit = false;
 
         if (illicit) {
           console.log(node.name);
