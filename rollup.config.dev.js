@@ -3,9 +3,9 @@ import resolve from "rollup-plugin-node-resolve";
 export default {
   input: "./src/recon.js",
   output: {
-    name: "recon",
+    name: "Recon",
     file: "reconBundle.js",
-    format: "iife"
+    format: "esm"
   },
   watch: {
     include: "src/**"
