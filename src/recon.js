@@ -1,7 +1,7 @@
 import * as acorn from "acorn";
 import whitelist from "./whitelist";
 import buildScopeTree from "./buildScopeTree";
-import checkIdentifiers from "./checkIdentifiers";
+import checkWords from "./checkWords";
 import { recurseAST, traverseASTArray } from "./walkers";
 
 class Recon {
@@ -14,11 +14,12 @@ class Recon {
       this.getScopeTree(str, options);
     }
     if (!this.astArray) return;
-    const illicitIdentifiers = checkIdentifiers(
+    const illicitIdentifiers = checkWords(
       this.astArray,
       recurseAST,
       this.whitelist,
-      allowedIdentifiers
+      allowedIdentifiers,
+      options
     );
     console.log(illicitIdentifiers);
     return illicitIdentifiers;
@@ -111,7 +112,7 @@ class Recon {
       child.parent = node.index;
       child.index = index;
       index++;
-      if (index > 10000) throw new Error("Too much code to parse");
+      if (index > 100000) throw new Error("Too much code to parse");
       this.astArray.push(child);
     });
     console.log("astArray: ", this.astArray);
