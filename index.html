@@ -27,8 +27,8 @@
     </div>
 
     <script src="node_modules/codemirror-minified/lib/codemirror.js"></script>
-    <script src="./reconBundle.js"></script>
-    <script>
+    <script type="module">
+      import Recon from "./reconBundle.js";
       const target = document.querySelector("#codemirror-target");
       const editor = CodeMirror.fromTextArea(target, {
         lineNumbers: true,
@@ -55,7 +55,7 @@
         }
       });
 
-      let r = new recon();
+      let r = new Recon();
 
       const parse = () => {
         const result = r.parse(editor.getValue(), {
