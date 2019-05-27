@@ -81,7 +81,8 @@ class Recon {
     recurseAST(ast, undefined, (child, node) => {
       if (child.hasOwnProperty("index")) {
         /*
-          Clone the child if already visited. 
+          Replace the child with a clone if the child
+          has already been visited (there are duplicates).
           ```
           const obj = { prop } 
           ```
@@ -91,12 +92,18 @@ class Recon {
           key so that the value node has a different 
           index.
         */
-        child = { ...this.astArray[child.index] };
+        Object.entries(node).find(([key, value]) => {
+          if (value === child) {
+            child = { ...child };
+            node[key] = child;
+            return true;
+          }
+        });
       }
       child.parent = node.index;
       child.index = index;
       index++;
-      if (index > 2000) throw new Error("infinite loop");
+      if (index > 10000) throw new Error("Too much code to parse");
       this.astArray.push(child);
     });
     console.log("astArray: ", this.astArray);
