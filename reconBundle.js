@@ -4949,6 +4949,7 @@ pp$8.readWord = function() {
 function parse(input, options) {
   return Parser.parse(input, options)
 }
+//# sourceMappingURL=acorn.mjs.map
 
 var whitelist = [
   "do",
@@ -5300,7 +5301,6 @@ function checkWords(astArray, walker, whitelist, allowedIdentifiers, options) {
         if (illicit && parent.label === node) illicit = false;
 
         if (illicit) {
-          console.log(node.name);
           illicitWords.push(node);
         }
       }
@@ -5314,7 +5314,7 @@ function checkWords(astArray, walker, whitelist, allowedIdentifiers, options) {
     },
     undefined
   );
-  return illicitWords;
+  return simplifyResults(illicitWords);
 }
 
 /*
@@ -5344,6 +5344,34 @@ function buildIdentifierSet(node, state) {
     });
   }
   return scopedIdentifiers;
+}
+
+/*
+  Remove unnecessary properties from illicitWords objects.
+*/
+function simplifyResults(nodeArray) {
+  if (!nodeArray.length) {
+    return false;
+  }
+  const results = [];
+  nodeArray.forEach(node => {
+    const nodeResult = {};
+    if (node.type === "Identifier") {
+      nodeResult.illicit = node.name;
+    } else if ((node.type = "ThisExpression")) {
+      nodeResult.illicit = "this";
+    }
+    if (node.hasOwnProperty("loc")) {
+      nodeResult.line = node.loc.start.line;
+      nodeResult.startColumn = node.loc.start.column;
+      nodeResult.endColumn = node.loc.end.column;
+    } else {
+      nodeResult.start = node.start;
+      nodeResult.end = node.end;
+    }
+    results.push(nodeResult);
+  });
+  return results;
 }
 
 function traverseASTArray(astArray, callback) {
@@ -5406,7 +5434,6 @@ class Recon {
       allowedIdentifiers,
       options
     );
-    console.log(illicitIdentifiers);
     return illicitIdentifiers;
   }
 
@@ -5416,7 +5443,6 @@ class Recon {
     }
     if (!this.astArray) return;
     buildScopeTree(this.astArray, traverseASTArray);
-    // console.log(this.ast);
     return this.ast;
   }
 
@@ -5496,7 +5522,6 @@ class Recon {
       if (index > 100000) throw new Error("Too much code to parse");
       this.astArray.push(child);
     });
-    console.log("astArray: ", this.astArray);
 
     for (let i = 0; i < this.astArray.length; i++) {
       if (this.astArray[i].index !== i) throw new Error("not matching");
