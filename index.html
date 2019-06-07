@@ -15,11 +15,11 @@
     <div id="root">
       <h3>Input Text</h3>
       <textarea id="codemirror-target"></textarea>
-      <button onclick="parse()" title="Cmd-Enter">parse</button>
-      <button onclick="check()" title="Shift-Cmd-Enter">
+      <button id="parse" title="Cmd-Enter">parse</button>
+      <button id="check" title="Shift-Cmd-Enter">
         check
       </button>
-      <button onclick="getScopeTree()" title="Alt-Cmd-Enter">
+      <button id="get-scope-tree" title="Alt-Cmd-Enter">
         get Scope Tree</button
       ><br /><br />
       <h3>Results</h3>
@@ -80,6 +80,14 @@
         });
         resultElmnt.textContent = JSON.stringify(result);
       };
+
+      const parseButton = document.getElementById("parse");
+      const checkButton = document.getElementById("check");
+      const getScopeTreeButton = document.getElementById("get-scope-tree");
+
+      parseButton.addEventListener("click", parse);
+      checkButton.addEventListener("click", check);
+      getScopeTreeButton.addEventListener("click", getScopeTree);
     </script>
   </body>
 </html>
