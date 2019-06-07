@@ -8,7 +8,7 @@
     "run": "karma start karma.main_run.conf.js",
     "vetting": "karma start karma.vetting.conf.js",
     "dev": "rollup --config rollup.config.dev.js --watch",
-    "build": "rollup --config rollup.config.prod.js"
+    "build": "rollup --config rollup.config.dist.js && rollup --config rollup.config.dist_with_acorn.js"
   },
   "author": "Adam Sherwood",
   "license": "MIT",
@@ -16,6 +16,7 @@
     "acorn": "^6.1.1"
   },
   "devDependencies": {
+    "@ampproject/rollup-plugin-closure-compiler": "^0.9.0",
     "browserify": "^16.2.3",
     "codemirror-minified": "^5.46.0",
     "jasmine-core": "^3.4.0",
