@@ -21,7 +21,6 @@ class Recon {
       allowedIdentifiers,
       options
     );
-    console.log(illicitIdentifiers);
     return illicitIdentifiers;
   }
 
@@ -31,7 +30,6 @@ class Recon {
     }
     if (!this.astArray) return;
     buildScopeTree(this.astArray, traverseASTArray);
-    // console.log(this.ast);
     return this.ast;
   }
 
@@ -111,7 +109,6 @@ class Recon {
       if (index > 100000) throw new Error("Too much code to parse");
       this.astArray.push(child);
     });
-    console.log("astArray: ", this.astArray);
 
     for (let i = 0; i < this.astArray.length; i++) {
       if (this.astArray[i].index !== i) throw new Error("not matching");
