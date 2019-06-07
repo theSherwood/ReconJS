@@ -34,7 +34,6 @@ function checkWords(astArray, walker, whitelist, allowedIdentifiers, options) {
         if (illicit && parent.label === node) illicit = false;
 
         if (illicit) {
-          console.log(node.name);
           illicitWords.push(node);
         }
       }
@@ -48,7 +47,7 @@ function checkWords(astArray, walker, whitelist, allowedIdentifiers, options) {
     },
     undefined
   );
-  return illicitWords;
+  return simplifyResults(illicitWords);
 }
 
 /*
@@ -78,6 +77,34 @@ function buildIdentifierSet(node, state) {
     });
   }
   return scopedIdentifiers;
+}
+
+/*
+  Remove unnecessary properties from illicitWords objects.
+*/
+function simplifyResults(nodeArray) {
+  if (!nodeArray.length) {
+    return false;
+  }
+  const results = [];
+  nodeArray.forEach(node => {
+    const nodeResult = {};
+    if (node.type === "Identifier") {
+      nodeResult.illicit = node.name;
+    } else if ((node.type = "ThisExpression")) {
+      nodeResult.illicit = "this";
+    }
+    if (node.hasOwnProperty("loc")) {
+      nodeResult.line = node.loc.start.line;
+      nodeResult.startColumn = node.loc.start.column;
+      nodeResult.endColumn = node.loc.end.column;
+    } else {
+      nodeResult.start = node.start;
+      nodeResult.end = node.end;
+    }
+    results.push(nodeResult);
+  });
+  return results;
 }
 
 export default checkWords;
