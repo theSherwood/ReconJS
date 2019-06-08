@@ -7,9 +7,15 @@ import { recurseAST, traverseASTArray } from "./walkers";
 class Recon {
   constructor() {
     this.resetWhitelist();
+    this.defaultOptions = {
+      sourceType: "module",
+      locations: true,
+      allowThis: false
+    };
   }
 
   check(str, options, allowedIdentifiers) {
+    options = { ...this.defaultOptions, ...options };
     if (typeof str === "string") {
       this.getScopeTree(str, options);
     }
@@ -25,6 +31,7 @@ class Recon {
   }
 
   getScopeTree(str, options) {
+    options = { ...this.defaultOptions, ...options };
     if (typeof str === "string") {
       this.parse(str, options);
     }
@@ -66,6 +73,7 @@ class Recon {
   }
 
   parse(string, options) {
+    options = { ...this.defaultOptions, ...options };
     this.ast = parse(string, options);
     this.buildASTArray(this.ast);
     return this.ast;
