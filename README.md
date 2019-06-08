@@ -9,7 +9,7 @@ Recon is not a replacement for unsafe software. It is simply an aid to flag dang
 Recon exposes a few methods, but the primary one is `check`.
 
 ```
-import Recon from "reconjs";
+import Recon from "@thesherwood/reconjs";
 
 const r = new Recon()
 r.check(codeToCheck /*, options, allowedIdentifiers */)
@@ -18,8 +18,6 @@ r.check(codeToCheck /*, options, allowedIdentifiers */)
 Calling `check` on a string will return an array of illicit nodes with location information, or `false` if reconjs finds no threats.
 
 ```
-import Recon from "reconjs";
-
 const dangerousCode = "console.log(privateData)";
 const safeCode = "1 + 1";
 
@@ -31,7 +29,7 @@ r.check(safeCode)
 // => false
 ```
 
-Recon also makes use of a whitelist of identifiers that are deemed safe (currently). You can add and/or remove identifiers from that whitelist.
+Recon also makes use of a whitelist of identifiers that are deemed safe (currently). You can add and/or remove identifiers from that whitelist. Each instance of Recon will maintain its own whitelist.
 
 ```
 const r = new Recon()
