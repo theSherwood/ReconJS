@@ -1,8 +1,8 @@
 # Intro to Recon _beta_
 
-Reconjs is a module for statically analyzing arbitrary javascript code for security threats. This is can be useful when you wish to run user code on your app and provide that code with access to certain functions/objects/data or when you wish to install a plugin that you might not trust.
+Reconjs is a module for statically analyzing arbitrary javascript code for security threats. This is can be useful when you wish to run user-generated code on your app and provide that code with access to certain functions/objects/data, or when you wish to install a plugin that you might not trust.
 
-Recon is not a replacement for writing software with poor security. It is simply an aid to flag dangerous code before it is run and to help the user/developer identify which lines of code pose the threat.
+Recon is not a replacement for unsafe software. It is simply an aid to flag dangerous code before it is run and to help the user/developer identify which lines of code pose the threat.
 
 # Usage
 
@@ -31,11 +31,20 @@ r.check(safeCode)
 // => false
 ```
 
-Recon also makes use of a whitelist of identifiers that are deemed safe.
+Recon also makes use of a whitelist of identifiers that are deemed safe (currently). You can add and/or remove identifiers from that whitelist.
+
+```
+const r = new Recon()
+r.addToWhitelist("example1");
+r.addToWhitelist(["example2", "example3"])
+
+r.removeFromWhitelist(["debugger", "console"])
+r.removeFromWhitelist("yield")
+```
 
 # Options
 
-Recon passes on any options to the Acorn parser. If you wish to affect the parser's behavior, this is the way to do that, though I would keep it simple. I won't cover all Acorn options here.
+Recon passes on any options passed to `check` to the Acorn parser. If you wish to affect the parser's behavior, this is the way to do that, though I would keep it simple. I won't cover all Acorn options here.
 
 | Option       | Values                                   | Behavior                                                                                                                                                                                                                                     |
 | ------------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
