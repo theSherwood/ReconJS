@@ -1,5 +1,5 @@
 {
-  "name": "reconjs",
+  "name": "@thesherwood/reconjs",
   "version": "0.0.1",
   "description": "check arbitrary javascipt code for security threats",
   "main": "./dist/bundle.min.js",
