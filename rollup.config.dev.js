@@ -8,7 +8,7 @@ export default {
     format: "esm"
   },
   watch: {
-    include: "src/**"
+    include: ["src/**", "rollup.config.dev.js"]
   },
   plugins: [resolve()]
 };
