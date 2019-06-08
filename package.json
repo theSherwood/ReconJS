@@ -1,16 +1,14 @@
 {
-  "name": "jslite",
-  "version": "1.0.0",
-  "description": "statically sanitize javascript",
-  "main": "reconBundle.js",
+  "name": "reconjs",
+  "version": "0.0.1",
+  "description": "check arbitrary javascipt code for security threats",
+  "main": "./dist/bundle.min.js",
   "scripts": {
     "test": "karma start",
-    "run": "karma start karma.main_run.conf.js",
-    "vetting": "karma start karma.vetting.conf.js",
     "dev": "rollup --config rollup.config.dev.js --watch",
     "build": "rollup --config rollup.config.dist.js && rollup --config rollup.config.dist_with_acorn.js"
   },
-  "author": "Adam Sherwood",
+  "author": "Adam Sherwood <https://github.com/theSherwood>",
   "license": "MIT",
   "dependencies": {
     "acorn": "^6.1.1"
