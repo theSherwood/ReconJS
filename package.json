@@ -1,6 +1,6 @@
 {
   "name": "@thesherwood/reconjs",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "check arbitrary javascipt code for security threats",
   "keywords": [
     "static",
