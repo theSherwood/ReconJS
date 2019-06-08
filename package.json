@@ -1,12 +1,21 @@
 {
   "name": "@thesherwood/reconjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "check arbitrary javascipt code for security threats",
-  "main": "./dist/bundle.min.js",
+  "keywords": [
+    "static",
+    "security"
+  ],
+  "main": "./dist/recon.js",
+  "module": "./dist/recon.mjs",
   "scripts": {
     "test": "karma start",
     "dev": "rollup --config rollup.config.dev.js --watch",
-    "build": "rollup --config rollup.config.dist.js && rollup --config rollup.config.dist_with_acorn.js"
+    "build": "rollup --config rollup.config.dist.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theSherwood/ReconJS"
   },
   "author": "Adam Sherwood <https://github.com/theSherwood>",
   "license": "MIT",
