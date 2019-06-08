@@ -1,12 +1,44 @@
-import compiler from "@ampproject/rollup-plugin-closure-compiler";
+import resolve from "rollup-plugin-node-resolve";
 
-export default {
-  input: "./src/recon.js",
-  output: {
-    name: "Recon",
-    file: "./dist/bundle.min.js",
-    format: "esm",
-    compact: true
+export default [
+  {
+    input: "./src/recon.js",
+    output: {
+      name: "Recon",
+      file: "./dist/recon.js",
+      format: "cjs",
+      compact: true
+    },
+    plugins: []
   },
-  plugins: [compiler()]
-};
+  {
+    input: "./src/recon.js",
+    output: {
+      name: "Recon",
+      file: "./dist/recon.mjs",
+      format: "esm",
+      compact: true
+    },
+    plugins: []
+  },
+  {
+    input: "./src/recon.js",
+    output: {
+      name: "Recon",
+      file: "./dist/recon_with_acorn.js",
+      format: "cjs",
+      compact: true
+    },
+    plugins: [resolve()]
+  },
+  {
+    input: "./src/recon.js",
+    output: {
+      name: "Recon",
+      file: "./dist/recon_with_acorn.mjs",
+      format: "esm",
+      compact: true
+    },
+    plugins: [resolve()]
+  }
+];
