@@ -58,26 +58,18 @@
       let r = new Recon();
 
       const parse = () => {
-        const result = r.parse(editor.getValue(), {
-          sourceType: "module"
-        });
+        const result = r.parse(editor.getValue());
         console.log(result);
         resultElmnt.textContent = JSON.stringify(result);
       };
 
       const check = () => {
-        const result = r.check(
-          editor.getValue(),
-          { sourceType: "module", locations: true, allowThis: false },
-          []
-        );
+        const result = r.check(editor.getValue());
         resultElmnt.textContent = JSON.stringify(result);
       };
 
       const getScopeTree = () => {
-        const result = r.getScopeTree(editor.getValue(), {
-          sourceType: "module"
-        });
+        const result = r.getScopeTree(editor.getValue());
         resultElmnt.textContent = JSON.stringify(result);
       };
 
